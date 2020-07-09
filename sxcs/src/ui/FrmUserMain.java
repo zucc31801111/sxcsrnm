@@ -33,6 +33,7 @@ public class FrmUserMain extends JFrame implements ActionListener{
 	/**
 	 * Launch the application.
 	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -83,11 +84,11 @@ public class FrmUserMain extends JFrame implements ActionListener{
 		btchangepwd.addActionListener(this);
 		btorder.addActionListener(this);
 		btaddress.addActionListener(this);
-		this.addWindowListener(new WindowAdapter() {
+		/*this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
-		});
+		});*/
 	}
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.btchangepwd) {

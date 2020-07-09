@@ -25,6 +25,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
@@ -46,6 +47,7 @@ public class FrmLogin extends JFrame implements ActionListener{
 	private JButton buttonLog;
 	private JRadioButton radioButtonAdmin;
 	private JRadioButton radioButtonUser;
+	private final ButtonGroup btGroup=new ButtonGroup();
 	/**
 	 * Launch the application.
 	 */
@@ -98,11 +100,13 @@ public class FrmLogin extends JFrame implements ActionListener{
 		
 		radioButtonUser = new JRadioButton("用户");
 		radioButtonUser.setFont(new Font("宋体", Font.PLAIN, 15));
+		btGroup.add(radioButtonUser);
 		radioButtonUser.setBounds(64, 145, 100, 27);
 		contentPane.add(radioButtonUser);
 		
 		radioButtonAdmin = new JRadioButton("管理员");
 		radioButtonAdmin.setFont(new Font("宋体", Font.PLAIN, 15));
+		btGroup.add(radioButtonAdmin);
 		radioButtonAdmin.setBounds(176, 145, 116, 27);
 		contentPane.add(radioButtonAdmin);
 		
@@ -129,55 +133,65 @@ public class FrmLogin extends JFrame implements ActionListener{
 		buttonLog.addActionListener(this);
 		buttonReg.addActionListener(this);
 		buttonEsc.addActionListener(this);
+		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
+		
 	}
 	
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.buttonLog) {
 			if(this.radioButtonUser.isSelected()) {
+				
 			String userid=this.textField.getText();
 			String pwd=new String(this.passwordField.getPassword());
 			try {
 				UserInf.currentLoginUser= SXCSUtil.userManager.login(userid, pwd);
-					
+				this.setVisible(false);	
+				FrmUserMain user =new FrmUserMain();
+			  user.setVisible(true);
+			
 			} catch (BaseException e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			FrmUserMain user =new FrmUserMain();
-			user.setVisible(true);
-			this.setVisible(false);
+			
 			}
 			else if(this.radioButtonAdmin.isSelected()){
 				String userid=this.textField.getText();
 				String pwd=new String(this.passwordField.getPassword());
 				try {
 					AdminInformation.currentLoginUser=SXCSUtil.adminManager.login(userid, pwd);
-						
+					this.setVisible(false);	
+					FrmAdminMain admin =new FrmAdminMain();
+				    admin.setVisible(true);
+				    
 				}
 			catch (BaseException e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "错误提示",JOptionPane.ERROR_MESSAGE);
 					return;
 					}
-				FrmAdminMain admin =new FrmAdminMain();
-				admin.setVisible(true);
-				this.setVisible(false);
+				
 				}
-		  
+			else
+			{
+				JOptionPane.showMessageDialog(null, "请选择用户或者管理员");
 			}
+		}
 		
 		 else if (e.getSource() == this.buttonEsc) {
 			System.exit(0);
 		}
 	else if(e.getSource()== this.buttonReg){
+		
 		FrmRegister reg=new FrmRegister();
 		reg.setVisible(true);
 		this.setVisible(false);
+		
 	}
 	}
 }

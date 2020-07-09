@@ -2,6 +2,7 @@ package model;
 
 import java.util.Date;
 
+
 public class CommodityEvaluation {
 	private int eval_commodity_id;
 	private String eval_user_id;

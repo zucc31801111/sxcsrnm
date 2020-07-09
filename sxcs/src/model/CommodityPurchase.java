@@ -1,5 +1,6 @@
 package model;
 
+
 public class CommodityPurchase {
 	private int purchase_id;
 	private int purchase_commodity_id;

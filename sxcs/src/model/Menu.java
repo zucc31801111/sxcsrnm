@@ -1,5 +1,6 @@
 package model;
 
+
 public class Menu {
 	private int menu_id;
 	private String menu_name;

@@ -1,6 +1,15 @@
 package model;
 
+
 public class FreshCategory {
+	
+	public static final String[] tblCategoryTitle={"序号","名称","描述"};
+	public String getCell(int col){
+	if(col==0) return ""+this.getCategory_id();
+	else if(col==1) return ""+this.getCategory_name();
+	else if(col==2) return ""+this.getCategory_describe();
+	else return "";
+}
   private int category_id;
   private String category_name;
   private String category_describe;
@@ -22,4 +31,6 @@ public String getCategory_describe() {
 public void setCategory_describe(String category_describe) {
 	this.category_describe = category_describe;
 }
+
+
 }

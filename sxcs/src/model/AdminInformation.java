@@ -1,5 +1,6 @@
 package model;
 
+
 public class AdminInformation {
 	public static AdminInformation currentLoginUser=null;
 	private String admin_id;

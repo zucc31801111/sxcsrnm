@@ -35,6 +35,7 @@ public class FrmRegister extends JFrame implements ActionListener{
 	private JTextField textField_5;
 	private JTextField textField_6;
 	private  JButton button;
+	private  JButton btSec;
 	/**
 	 * Launch the application.
 	 */
@@ -54,6 +55,7 @@ public class FrmRegister extends JFrame implements ActionListener{
 	/**
 	 * Create the frame.
 	 */
+	
 	public FrmRegister() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 565);
@@ -99,7 +101,7 @@ public class FrmRegister extends JFrame implements ActionListener{
 		
 		button = new JButton("确认");
 		
-		button.setBounds(141, 478, 113, 27);
+		button.setBounds(82, 478, 113, 27);
 		contentPane.add(button);
 		
 		textField = new JTextField();
@@ -136,17 +138,23 @@ public class FrmRegister extends JFrame implements ActionListener{
 		contentPane.add(textField_6);
 		textField_6.setColumns(10);
 		
+		btSec = new JButton("退出");
+		btSec.setBounds(248, 478, 113, 27);
+		contentPane.add(btSec);
+		
 		double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		double height = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		this.setLocation((int) (width - this.getWidth()) / 2,
 				(int) (height - this.getHeight()) / 2);
 		
 		button.addActionListener(this);
-		this.addWindowListener(new WindowAdapter() {
+		btSec.addActionListener(this);
+		/*this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
-		});
+		});*/
+		
 	}
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.button) {
@@ -161,16 +169,21 @@ public class FrmRegister extends JFrame implements ActionListener{
 			user.setUser_city(this.textField_6.getText());
 			try {
 				UserInf.currentLoginUser= SXCSUtil.userManager.createUser(user);
-					
+				FrmLogin login=new FrmLogin();
+				login.setVisible(true);
+				this.setVisible(false);
 			} catch (BaseException e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			FrmLogin t =new FrmLogin();
-			t.setVisible(true);
-			this.setVisible(false);
-			}
+			
 			
 			}
-		
+		else if(e.getSource() == this.btSec) {
+			FrmLogin login=new FrmLogin();
+			login.setVisible(true);
+			this.setVisible(false);
+		}
+		 
+			}
 }

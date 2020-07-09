@@ -2,11 +2,12 @@ package model;
 
 import java.util.Date;
 
+
 public class CommodityOrder {
 	private int order_id;
 	private String order_user_id;
-	private int order_begin_price;
-	private int order_end_price;
+	private float order_begin_price;
+	private float order_end_price;
 	private Date order_gettime;
 	private int order_delivery_id;
 	private String order_state;
@@ -23,16 +24,16 @@ public class CommodityOrder {
 	public void setOrder_user_id(String order_user_id) {
 		this.order_user_id = order_user_id;
 	}
-	public int getOrder_begin_price() {
+	public float getOrder_begin_price() {
 		return order_begin_price;
 	}
-	public void setOrder_begin_price(int order_begin_price) {
+	public void setOrder_begin_price(float order_begin_price) {
 		this.order_begin_price = order_begin_price;
 	}
-	public int getOrder_end_price() {
+	public float getOrder_end_price() {
 		return order_end_price;
 	}
-	public void setOrder_end_price(int order_end_price) {
+	public void setOrder_end_price(float order_end_price) {
 		this.order_end_price = order_end_price;
 	}
 	public Date getOrder_gettime() {

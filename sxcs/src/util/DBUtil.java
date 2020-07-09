@@ -2,6 +2,7 @@ package util;
 
 import java.sql.Connection;
 
+
 public class DBUtil {
 	private static final String jdbcUrl="jdbc:mysql://localhost:3306/sxcs";
 	private static final String dbUser="root";

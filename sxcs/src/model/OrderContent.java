@@ -1,10 +1,11 @@
 package model;
 
+
 public class OrderContent {
 	private int content_order_id;
 	private int content_commodity_id;
 	private int order_number;
-	private int order_price;
+	private float order_price;
 	private int content_discount_sum;
 	private int content_discount_id;
 	public int getContent_order_id() {
@@ -25,10 +26,10 @@ public class OrderContent {
 	public void setOrder_number(int order_number) {
 		this.order_number = order_number;
 	}
-	public int getOrder_price() {
+	public float getOrder_price() {
 		return order_price;
 	}
-	public void setOrder_price(int order_price) {
+	public void setOrder_price(float order_price) {
 		this.order_price = order_price;
 	}
 	public int getContent_discount_sum() {

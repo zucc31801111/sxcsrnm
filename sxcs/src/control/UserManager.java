@@ -2,7 +2,8 @@ package control;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.List;
 import itl.IUserManager;
 import model.UserInf;
 import util.BaseException;
@@ -12,6 +13,7 @@ import util.DbException;
 
 public class UserManager implements IUserManager{
 	@Override
+	
 	public UserInf login(String userid, String pwd) throws BaseException {
 		if("".equals(userid) ||userid==null){
 			throw new BaseException("账号不能为空");
@@ -49,9 +51,8 @@ public class UserManager implements IUserManager{
 		}
 		
 	}
-	@Override
-	public UserInf loadUser(String userid)throws BaseException{
-		
+	public  List<UserInf>loadUser(String userid)throws BaseException{
+		List<UserInf> result=new ArrayList<UserInf>();
 		Connection conn=null;
 		try {
 			conn=DBUtil.getConnection();
@@ -60,7 +61,8 @@ public class UserManager implements IUserManager{
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setString(1,userid);
 			java.sql.ResultSet rs=pst.executeQuery();
-			if(!rs.next()) throw new BusinessException("账号不存在");
+			while(rs.next())
+			{
 			UserInf u=new UserInf();
 			u.setUser_id(rs.getString(1));
 			u.setUser_name(rs.getString(2));
@@ -72,9 +74,9 @@ public class UserManager implements IUserManager{
 			u.setUser_registration_time(rs.getDate(8));
 			u.setUser_vip(rs.getBoolean(9));
 			u.setUser_vip_end_time(rs.getDate(10));
-			rs.close();
-			pst.close();
-			return u;
+			result.add(u);
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DbException(e);
@@ -88,8 +90,10 @@ public class UserManager implements IUserManager{
 					e.printStackTrace();
 				}
 		}
-		
+		return result;
 	}
+	
+	
 	@Override
 	public UserInf changeUserPwd(String userid,String oldPwd,String newPwd1,String newPwd2)throws BaseException{
 		if(oldPwd==null||"".equals(oldPwd)) throw new BaseException("原密码不能为空");

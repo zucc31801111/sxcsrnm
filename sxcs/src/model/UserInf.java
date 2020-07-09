@@ -3,6 +3,7 @@ package model;
 import java.util.Date;
 
 
+
 public class UserInf {
 	public static UserInf currentLoginUser=null;
 	private String user_id;

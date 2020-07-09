@@ -2,6 +2,7 @@ package model;
 
 import java.util.Date;
 
+
 public class DiscountCommodity {
 	private int list_discount_id;
 	private int list_commodity_id;

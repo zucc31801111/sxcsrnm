@@ -12,6 +12,7 @@ import ui.FrmLogin;
 
 public class FrmMain extends JFrame {
 
+
 	private JPanel contentPane;
 
 	/**

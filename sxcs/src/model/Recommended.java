@@ -1,5 +1,6 @@
 package model;
 
+
 public class Recommended {
 	private int rec_commodity_id;
 	private int rec_menu_id;

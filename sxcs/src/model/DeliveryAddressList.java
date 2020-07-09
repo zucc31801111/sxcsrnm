@@ -1,5 +1,6 @@
 package model;
 
+
 public class DeliveryAddressList {
 	private int delivery_id;
 	private String delivery_user_id;

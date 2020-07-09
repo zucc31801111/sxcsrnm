@@ -2,6 +2,7 @@ package model;
 
 import java.util.Date;
 
+
 public class DiscountInformation {
 	private int discount_id;
 	private String discount_content;

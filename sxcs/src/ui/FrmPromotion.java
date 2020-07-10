@@ -68,7 +68,8 @@ public class FrmPromotion extends JFrame implements ActionListener{
 			}
 		});
 	}
-	private void reloadPromotionTable(){//这是测试数据，需要用实际数替换
+	
+	private void reloadPromotionTable(){
 		
 		try {
 			allPromotion=SXCSUtil.commodityManager.loadPromotion();

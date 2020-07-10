@@ -3,6 +3,7 @@ package itl;
 import java.util.List;
 
 import model.CommodityInformation;
+import model.CommodityPurchase;
 import model.FreshCategory;
 import model.Promotion;
 import util.BaseException;
@@ -28,5 +29,5 @@ public interface ICommodityManager {
 	
 	public void addPromotion(int commodityid, float price , int sum, String starttime, String endtime) throws BaseException;
 	
-	
+	public List<CommodityPurchase> loadPurchase()throws BaseException;
 }

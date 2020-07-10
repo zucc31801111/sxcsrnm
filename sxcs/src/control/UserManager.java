@@ -5,15 +5,121 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import itl.IUserManager;
+import model.CommodityInformation;
+import model.DeliveryAddressList;
+import model.FreshCategory;
+import model.Promotion;
 import model.UserInf;
+import model.UserShopcar;
 import util.BaseException;
 import util.BusinessException;
 import util.DBUtil;
 import util.DbException;
 
 public class UserManager implements IUserManager{
-	@Override
 	
+	@Override
+	public UserShopcar addUserShopcar(int sum,CommodityInformation commodity)throws BaseException{
+		if(sum<0 ){
+			throw new BusinessException("数量应大于0");
+		}
+		if(commodity.getCommodity_number()<sum) {
+				throw new BusinessException("选购数量大于库存");
+			}
+		int allsum=sum;
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			
+			String  sql="select sum(shopcar_commodity_sum) from user_shopcar where shopcar_commodity_id = ? and shopcar_user_id=?";
+		java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+		pst.setInt(1,commodity.getCommodity_id());
+		pst.setString(2,UserInf.currentLoginUser.getUser_id());
+		java.sql.ResultSet rs=pst.executeQuery();
+		if(rs.next()) {
+			allsum=rs.getInt(1)+sum;
+			rs.close();
+			pst.close();
+			if(commodity.getCommodity_number()<allsum) {
+				throw new BusinessException("选购数量大于库存");
+			}
+			sql="update user_shopcar set shopcar_commodity_sum = ? where shopcar_commodity_id = ?";
+			pst=conn.prepareStatement(sql);
+			pst.setInt(1,allsum);
+			pst.setInt(2,commodity.getCommodity_id());
+			pst.execute();
+			pst.close();
+		}
+		else {
+			rs.close();
+			pst.close();
+			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice) "
+					+ "values(?,?,?,?,?,?)";
+		    pst=conn.prepareStatement(sql);
+			pst.setString(1, UserInf.currentLoginUser.getUser_id());
+			pst.setInt(2, commodity.getCommodity_id());
+			pst.setString(3, commodity.getCommodity_name());
+			pst.setInt(4, allsum);
+			pst.setFloat(5,commodity.getCommodity_price());
+			pst.setFloat(6, commodity.getCommodity_vip_price());
+			pst.execute();
+			pst.close();
+		}
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DbException(e);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return null;
+	}
+	@Override
+	public List<UserShopcar> loadShopcar()throws BaseException{
+		List<UserShopcar> result=new ArrayList<UserShopcar>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice"
+					+ " from user_shopcar where shopcar_user_id = ? order by shopcar_commodity_id";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setString(1,UserInf.currentLoginUser.getUser_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 UserShopcar p =new UserShopcar();
+			 p.setShopcar_commodity_id(rs.getInt(1));
+			 p.setShopcar_commodity_name(rs.getString(2));
+			 p.setShopcar_commodity_sum(rs.getInt(3));
+			 p.setShopcar_commodity_price(rs.getFloat(4));
+			 p.setShopcar_commodity_vipprice(rs.getFloat(5));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+		
+	}
+	
+	@Override
 	public UserInf login(String userid, String pwd) throws BaseException {
 		if("".equals(userid) ||userid==null){
 			throw new BaseException("账号不能为空");
@@ -198,9 +304,178 @@ public class UserManager implements IUserManager{
 		}
 		return user;
 	}
+	@Override
+	public List<DeliveryAddressList> loadAddress()throws BaseException{
+		List<DeliveryAddressList> result=new ArrayList<DeliveryAddressList>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select delivery_id,delivery_province,delivery_city,delivery_area,delivery_address,delivery_name,delivery_phone"
+					+ " from delivery_address_list where delivery_user_id = ? order by delivery_id";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setString(1,UserInf.currentLoginUser.getUser_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 DeliveryAddressList p =new DeliveryAddressList();
+			 p.setDelivery_id(rs.getInt(1));
+			 p.setDelivery_province(rs.getString(2));
+			 p.setDelivery_city(rs.getString(3));
+			 p.setDelivery_area(rs.getString(4));
+			 p.setDelivery_address(rs.getString(5));
+			 p.setDelivery_name(rs.getString(6));
+			 p.setDelivery_phone(rs.getString(7));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+		
+	}
+	@Override
+	public DeliveryAddressList addAddress(String province,String city,String area,String address,String name,String phone)throws BaseException{
+		if(province==null || "".equals(province) ){
+			throw new BusinessException("省份不能为空");
+		}
+		if(city==null || "".equals(city)){
+			throw new BusinessException("市不能为空");
+		}
+		if(area==null || "".equals(area) ){
+			throw new BusinessException("区/县不能为空");
+		}
+		if(address==null || "".equals(address) ){
+			throw new BusinessException("详细地址不能为空");
+		}
+		if(name==null || "".equals(name) ){
+			throw new BusinessException("收货人不能为空");
+		}
+		if(phone==null || "".equals(phone)){
+			throw new BusinessException("手机号不能为空");
+		}
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
 
+		 String  sql="insert into delivery_address_list(delivery_user_id,delivery_province,delivery_city,delivery_area,delivery_address,delivery_name,delivery_phone) "
+					+ "values(?,?,?,?,?,?,?)";
+		 java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+		    pst.setString(1, UserInf.currentLoginUser.getUser_id());
+			pst.setString(2,province);
+			pst.setString(3,city);
+			pst.setString(4,area);
+			pst.setString(5,address);
+			pst.setString(6,name);
+			pst.setString(7,phone);
+			pst.execute();
+			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DbException(e);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		return null;
+		
+	}
+	@Override
+	public void deleteAddress(DeliveryAddressList address) throws BaseException{
+		Connection conn=null;
+		int addressId =address.getDelivery_id();
+			try {
+				conn=DBUtil.getConnection();
+		java.sql.Statement st=conn.createStatement();
+		  String sql="delete from delivery_address_list where delivery_id = "+addressId;
+		     st.execute(sql);
+		     st.close();
+		    
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				throw new DbException(ex);
+				
+			}
+			finally{
+				if(conn!=null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						
+						e.printStackTrace();
+					}
+			}
+		
+	}
+	@Override
+	public void changeAddress(DeliveryAddressList address) throws BaseException{
+		if(address.getDelivery_province()==null || "".equals(address.getDelivery_province()) ){
+			throw new BusinessException("省份不能为空");
+		}
+		if(address.getDelivery_city()==null || "".equals(address.getDelivery_city())){
+			throw new BusinessException("市不能为空");
+		}
+		if(address.getDelivery_area()==null || "".equals(address.getDelivery_area()) ){
+			throw new BusinessException("区/县不能为空");
+		}
+		if(address.getDelivery_address()==null || "".equals(address.getDelivery_address()) ){
+			throw new BusinessException("详细地址不能为空");
+		}
+		if(address.getDelivery_name()==null || "".equals(address.getDelivery_name()) ){
+			throw new BusinessException("收货人不能为空");
+		}
+		if(address.getDelivery_phone()==null || "".equals(address.getDelivery_phone())){
+			throw new BusinessException("手机号不能为空");
+		}
+		Connection conn=null;
+		int deliveryId =address.getDelivery_id();
+		try {
+			conn=DBUtil.getConnection();
+			String  sql="update delivery_address_list set  delivery_province = ?,delivery_city = ?,delivery_area = ?,delivery_address = ?,delivery_name = ?,delivery_phone = ? where delivery_id=?";
+			 java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			   pst.setString(1,address.getDelivery_province());
+				pst.setString(2,address.getDelivery_city());
+				pst.setString(3,address.getDelivery_area());
+				pst.setString(4,address.getDelivery_address());
+				pst.setString(5,address.getDelivery_name());
+				pst.setString(6,address.getDelivery_phone());
+				pst.setInt(7, deliveryId);
+				pst.execute();
+				pst.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+			
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

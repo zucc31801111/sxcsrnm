@@ -11,6 +11,7 @@ import java.util.List;
 import itl.ICommodityManager;
 import model.AdminInformation;
 import model.CommodityInformation;
+import model.CommodityPurchase;
 import model.FreshCategory;
 import model.Promotion;
 import util.BaseException;
@@ -130,6 +131,42 @@ public class CommodityManager implements ICommodityManager{
 		
 	}
 	@Override
+	public List<CommodityPurchase> loadPurchase()throws BaseException{
+		List<CommodityPurchase> result=new ArrayList<CommodityPurchase>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select purchase_id,purchase_commodity_id,purchase_admin_id,purchase_number,purchase_state from commodity_purchase order by purchase_id";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 CommodityPurchase p =new CommodityPurchase();
+			 p.setPurchase_id(rs.getInt(1));
+			 p.setPurchase_commodity_id(rs.getInt(2));
+			 p.setPurchase_admin_id(rs.getString(3));
+			 p.setPurchase_number(rs.getInt(4));
+			 p.setPurchase_state(rs.getString(5));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+		
+	}
+	
+	@Override
 	
 	public CommodityInformation addCommodity(String commodityName,float commodityPrice,float vipPrice,String commodityspec,String commoditydesc,FreshCategory category)throws BaseException{
 		if(commodityName==null || "".equals(commodityName) ){
@@ -166,8 +203,8 @@ public class CommodityManager implements ICommodityManager{
 					+ "values(?,?,?,?,?,?,?)";
 			 pst=conn.prepareStatement(sql);
 			pst.setString(1, commodityName);
-			pst.setDouble(2, commodityPrice);
-			pst.setDouble(3, vipPrice);
+			pst.setFloat(2, commodityPrice);
+			pst.setFloat(3, vipPrice);
 			pst.setInt(4, 0);
 			pst.setString(5, commodityspec);
 			pst.setString(6, commoditydesc);

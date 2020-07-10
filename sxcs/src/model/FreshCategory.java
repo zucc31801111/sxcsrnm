@@ -9,7 +9,7 @@ public class FreshCategory {
 	else if(col==1) return ""+this.getCategory_name();
 	else if(col==2) return ""+this.getCategory_describe();
 	else return "";
-}
+}    
   private int category_id;
   private String category_name;
   private String category_describe;

@@ -149,13 +149,11 @@ public class FrmRegister extends JFrame implements ActionListener{
 		
 		button.addActionListener(this);
 		btSec.addActionListener(this);
-		/*this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});*/
+
 		
 	}
+	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.button) {
 			UserInf user=new UserInf();

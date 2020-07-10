@@ -40,14 +40,14 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JMenuBar menubar=new JMenuBar(); ;
     private JMenu menu_Manager=new JMenu("个人信息管理");
-    private JMenu menu_UserManager=new JMenu("用户管理");
+   // private JMenu menu_UserManager=new JMenu("用户管理");
     private JMenu menu_CommodityCategory=new JMenu("商品分类管理");
     private JMenu menu_Commodity=new JMenu("商品管理");
     
     private JMenuItem  menuItem_ChangePwd=new JMenuItem("修改密码");
     
-    private JMenuItem  menuItem_UserSerach =new JMenuItem("用户查询");
-    private JMenuItem  menuItem_UserDelete =new JMenuItem("用户删除");
+   // private JMenuItem  menuItem_UserSerach =new JMenuItem("用户查询");
+   // private JMenuItem  menuItem_UserDelete =new JMenuItem("用户删除");
     
     private JMenuItem  menuItem_CategoryAdd =new JMenuItem("增加分类");
     private JMenuItem  menuItem_CategoryDelete =new JMenuItem("删除分类");
@@ -55,6 +55,7 @@ public class FrmAdminMain extends JFrame implements ActionListener {
     private JMenuItem  menuItem_CommodityAdd=new JMenuItem("添加商品");
     private JMenuItem  menuItem_CommodityDelete=new JMenuItem("删除商品");
     private JMenuItem  menuItem_CommodityPurchase=new JMenuItem("采购商品");
+    private JMenuItem  menuItem_CommodityPurchaseList=new JMenuItem("商品采购表");
     private JMenuItem  menuItem_CommodityDiscount=new JMenuItem("满折管理");
     private JMenuItem  menuItem_Promotion=new JMenuItem("限时促销管理");
     private JMenuItem  menuItem_Coupon=new JMenuItem("优惠券管理");
@@ -93,7 +94,7 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 	}
 	
 
-	private void reloadFreshCategoryTable(){//这是测试数据，需要用实际数替换
+	private void reloadFreshCategoryTable(){
 		try {
 			allCategory=SXCSUtil.commodityManager.loadFreshCategory();
 		} catch (BaseException e) {
@@ -134,23 +135,20 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 		setFont(new Font("Dialog", Font.PLAIN, 30));
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 			this.setTitle("管理员系统");
-		    	menu_Manager.setFont(new Font("新宋体", Font.PLAIN, 15));
-		    	menuItem_ChangePwd.setFont(new Font("宋体", Font.PLAIN, 15));
-			//dlgLogin=new FrmLogin();
-			//dlgLogin.setVisible(true);
-		    //菜单
+		    menu_Manager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_ChangePwd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Manager.add(menuItem_ChangePwd);
 		    menuItem_ChangePwd.addActionListener(this);
 		    menubar.add(menu_Manager);
 		    
-		    menu_UserManager.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+		 /*   menu_UserManager.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
 		    menuItem_UserSerach.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_UserManager.add(this.menuItem_UserSerach);
 		    menuItem_UserSerach.addActionListener(this);
 		    menuItem_UserDelete.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_UserManager.add(this.menuItem_UserDelete);
 		    menuItem_UserDelete.addActionListener(this);
-		    menubar.add(menu_UserManager);
+		    menubar.add(menu_UserManager);*/
 		    
 		    
 		    
@@ -174,6 +172,9 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 		    menuItem_CommodityPurchase.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityPurchase);
 		    menuItem_CommodityPurchase.addActionListener(this);
+		    menuItem_CommodityPurchaseList.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Commodity.add(this.menuItem_CommodityPurchaseList);
+		    menuItem_CommodityPurchaseList.addActionListener(this);
 		    menuItem_CommodityDiscount.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityDiscount);
 		    menuItem_CommodityDiscount.addActionListener(this);
@@ -225,15 +226,7 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 				dlg.setVisible(true);
 	
 			}
-			
-			else if(e.getSource()==this.menuItem_UserSerach){
 
-			}
-			else if(e.getSource()==this.menuItem_UserDelete){
-				//FrmReaderManager dlg=new FrmReaderManager(this,"读者管理",true);
-				//dlg.setVisible(true);
-			}
-			
 			else if(e.getSource()==this.menuItem_CommodityAdd){
 				
 					if(this.curCategory==null) {
@@ -289,6 +282,11 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 				
 			}
 		
+			else if(e.getSource()==this.menuItem_CommodityPurchaseList){
+				FrmPurchaseList dlg =new FrmPurchaseList();
+				dlg.setVisible(true);
+				 
+			}
 			else if(e.getSource()==this.menuItem_CommodityDiscount){
 				//FrmBookLendSearch dlg=new FrmBookLendSearch(this,"图书借阅情况查询",true);
 				//dlg.setVisible(true);

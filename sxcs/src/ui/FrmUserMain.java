@@ -12,9 +12,13 @@ import starter.SXCSUtil;
 import util.BaseException;
 
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,14 +30,20 @@ import javax.swing.JButton;
 
 public class FrmUserMain extends JFrame implements ActionListener{
 
-	private JPanel contentPane;
-	private JButton btchangepwd;
-	private JButton btorder;
-	private JButton btaddress;
-	/**
-	 * Launch the application.
-	 */
-	
+	private static final long serialVersionUID = 1L;
+	private JMenuBar menubar=new JMenuBar(); ;
+    private JMenu menu_Manager=new JMenu("个人信息管理");
+    private JMenu menu_AddressManager=new JMenu("地址管理");
+    private JMenu menu_CommodityOrderManager=new JMenu("商品订单管理");
+    private JMenu menu_CommodityManager=new JMenu("商品列表");
+    private JMenu menu_MenuManager=new JMenu("推荐菜谱");
+    
+    private JMenuItem  menuItem_ChangePwd=new JMenuItem("修改密码");
+    private JMenuItem  menuItem_Address =new JMenuItem("地址信息表");
+    private JMenuItem  menuItem_CommodityOrder=new JMenuItem("订单表");
+    private JMenuItem  menuItem_Commodity=new JMenuItem("商品列表");
+    private JMenuItem  menuItem_Menu=new JMenuItem("菜谱列表");
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -47,43 +57,43 @@ public class FrmUserMain extends JFrame implements ActionListener{
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public FrmUserMain() {
-		setTitle("用户界面");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(50, 50, 850, 600);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		setFont(new Font("Dialog", Font.PLAIN, 30));
+		setExtendedState(Frame.MAXIMIZED_BOTH);
+			this.setTitle("用户系统");
 		
-		JLabel label = new JLabel("生鲜网超欢迎您");
-		label.setFont(new Font("微软雅黑", Font.PLAIN, 25));
-		label.setBounds(0, -2, 196, 47);
-		contentPane.add(label);
-		
-		btchangepwd = new JButton("修改密码");
-		btchangepwd.setBounds(700, 13, 113, 27);
-		contentPane.add(btchangepwd);
-		
-		btorder = new JButton("订单查询");
-		btorder.setBounds(700, 50, 113, 27);
-		contentPane.add(btorder);
-		
-		btaddress = new JButton("地址管理");
-		btaddress.setBounds(700, 87, 113, 27);
-		contentPane.add(btaddress);
-		
-		double width = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-		double height = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		this.setLocation((int) (width - this.getWidth()) / 2,
-				(int) (height - this.getHeight()) / 2);
-		
-		btchangepwd.addActionListener(this);
-		btorder.addActionListener(this);
-		btaddress.addActionListener(this);
+			menu_Manager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_ChangePwd.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Manager.add(menuItem_ChangePwd);
+		    menuItem_ChangePwd.addActionListener(this);
+		    menubar.add(menu_Manager);
+		    	
+		    menu_AddressManager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_Address.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_AddressManager.add(menuItem_Address);
+		    menuItem_Address.addActionListener(this);
+		    menubar.add(menu_AddressManager);
+		    
+		    menu_CommodityOrderManager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_CommodityOrder.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_CommodityOrderManager.add(menuItem_CommodityOrder);
+		    menuItem_CommodityOrder.addActionListener(this);
+		    menubar.add(menu_CommodityOrderManager);
+		    
+		    menu_CommodityManager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_Commodity.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_CommodityManager.add(menuItem_Commodity);
+		    menuItem_Commodity.addActionListener(this);
+		    menubar.add(menu_CommodityManager);
+		    
+		    menu_MenuManager.setFont(new Font("新宋体", Font.PLAIN, 15));
+		    menuItem_Menu.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_MenuManager.add(menuItem_Menu);
+		    menuItem_Menu.addActionListener(this);
+		    menubar.add(menu_MenuManager);
+		    
+		    this.setJMenuBar(menubar);
+		    
 		/*this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -91,17 +101,25 @@ public class FrmUserMain extends JFrame implements ActionListener{
 		});*/
 	}
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.btchangepwd) {
-				FrmUserChangePwd changepwd=new FrmUserChangePwd();
-				changepwd.setVisible(true);
+		if (e.getSource() == this.menuItem_ChangePwd) {
+				FrmUserChangePwd dlg=new FrmUserChangePwd();
+				dlg.setVisible(true);
 		}
-		else if(e.getSource() == this.btaddress)
+		else if(e.getSource() == this.menuItem_Address)
 		{
+			FrmAddress dlg=new FrmAddress();
+			dlg.setVisible(true);
+		}
+		else if(e.getSource() == this.menuItem_CommodityOrder) {
 			
 		}
-		else if(e.getSource() == this.btorder) {
-			
+       else if(e.getSource() == this.menuItem_Commodity) {
+    	   FrmCommodityList dlg=new FrmCommodityList();
+    	   dlg.setVisible(true);
 		}
+      else if(e.getSource() == this.menuItem_Menu) {
+	
+}
 	}
 	
 	

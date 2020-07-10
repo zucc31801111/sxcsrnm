@@ -135,7 +135,7 @@ public void actionPerformed(ActionEvent e) {
 		 endtime=this.textendtime.getText();
 		}
 		catch (NumberFormatException e1) {
-			JOptionPane.showMessageDialog(null, "数量不能为空", "错误",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "数字不能为空", "错误",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		

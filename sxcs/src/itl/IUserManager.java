@@ -3,6 +3,7 @@ import java.util.List;
 
 import model.CommodityInformation;
 import model.DeliveryAddressList;
+import model.Recommended;
 import model.UserInf;
 import model.UserShopcar;
 import util.BaseException;
@@ -24,4 +25,10 @@ public interface IUserManager {
 	public List<UserShopcar> loadShopcar()throws BaseException;
 	
 	public UserShopcar addUserShopcar(int sum,CommodityInformation commodity)throws BaseException;
+
+	public  void deleteShopcar(UserShopcar shopcar) throws BaseException;
+	
+	public UserShopcar addUserShopcartwo(int sum,Recommended recommended)throws BaseException;
+	
+	public void changeShopcar(UserShopcar shopca,int sum)throws BaseException;
 }

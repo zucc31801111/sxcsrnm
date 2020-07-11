@@ -2,6 +2,16 @@ package model;
 
 
 public class Menu {
+	public static final String[] tblMenuTitle={"菜谱编号","推荐菜谱名","菜谱材料","菜谱步骤","图片"};
+	public String getCell(int col){
+		if(col==0) return ""+this.getMenu_id();
+		else if(col==1) return ""+this.getMenu_name();
+		else if(col==2) return ""+this.getMenu_materials();
+		else if(col==3) return ""+this.getMenu_step();
+		else if(col==4) return ""+this.getMenu_picture();
+		else return "";
+	}
+	
 	private int menu_id;
 	private String menu_name;
 	private String menu_materials;

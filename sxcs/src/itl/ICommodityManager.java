@@ -5,7 +5,10 @@ import java.util.List;
 import model.CommodityInformation;
 import model.CommodityPurchase;
 import model.FreshCategory;
+import model.Menu;
 import model.Promotion;
+import model.Recommended;
+import model.UserShopcar;
 import util.BaseException;
 
 public interface ICommodityManager {
@@ -30,4 +33,17 @@ public interface ICommodityManager {
 	public void addPromotion(int commodityid, float price , int sum, String starttime, String endtime) throws BaseException;
 	
 	public List<CommodityPurchase> loadPurchase()throws BaseException;
+	
+	public Menu createMenu(String menu_name,String menu_materials,String menu_step, String menu_picture)throws BaseException;
+	
+	public List<Menu> loadMenu()throws BaseException;
+	
+	public List<Recommended> loadRecommendedCommodity(Menu curMenu)throws BaseException;
+	
+	public void deleteMenu(Menu curMenu) throws BaseException;
+	
+	public CommodityInformation addRecommendedCommodity(String commodityName,String describe,Menu curMenu)throws BaseException;
+
+	public void deleteRecommendedCommodity(Recommended recommended)throws BaseException;
+
 }

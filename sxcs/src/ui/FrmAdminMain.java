@@ -52,6 +52,7 @@ public class FrmAdminMain extends JFrame implements ActionListener {
     private JMenuItem  menuItem_CategoryAdd =new JMenuItem("增加分类");
     private JMenuItem  menuItem_CategoryDelete =new JMenuItem("删除分类");
   
+    private JMenuItem  menuItem_MenuManager=new JMenuItem("菜谱管理");
     private JMenuItem  menuItem_CommodityAdd=new JMenuItem("添加商品");
     private JMenuItem  menuItem_CommodityDelete=new JMenuItem("删除商品");
     private JMenuItem  menuItem_CommodityPurchase=new JMenuItem("采购商品");
@@ -162,7 +163,10 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 		    menubar.add(menu_CommodityCategory);
 		    
 		    
-		    menu_Commodity.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Commodity.setFont(new Font("宋体", Font.PLAIN, 15));  
+		    menuItem_MenuManager.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Commodity.add(this.menuItem_MenuManager);
+		    menuItem_MenuManager.addActionListener(this);
 		    menuItem_CommodityAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityAdd);
 		    menuItem_CommodityAdd.addActionListener(this);
@@ -286,6 +290,10 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 				FrmPurchaseList dlg =new FrmPurchaseList();
 				dlg.setVisible(true);
 				 
+			}
+			else if(e.getSource()==this.menuItem_MenuManager) {
+				FrmMenu dlg =new FrmMenu();
+				dlg.setVisible(true);
 			}
 			else if(e.getSource()==this.menuItem_CommodityDiscount){
 				//FrmBookLendSearch dlg=new FrmBookLendSearch(this,"图书借阅情况查询",true);

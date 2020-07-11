@@ -149,7 +149,7 @@ public void actionPerformed(ActionEvent e) {
 			 address2.setDelivery_name(this.textname.getText());
 			 address2.setDelivery_phone(this.textphone.getText());
 			 try {
-					SXCSUtil.userManager.changeAddress(address2);;
+					SXCSUtil.userManager.changeAddress(address2);
 					this.setVisible(false);
 				} catch (BaseException e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);

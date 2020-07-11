@@ -13,13 +13,257 @@ import model.AdminInformation;
 import model.CommodityInformation;
 import model.CommodityPurchase;
 import model.FreshCategory;
+import model.Menu;
 import model.Promotion;
+import model.Recommended;
 import util.BaseException;
 import util.BusinessException;
 import util.DBUtil;
 import util.DbException;
 
 public class CommodityManager implements ICommodityManager{
+	@Override
+	public void deleteRecommendedCommodity(Recommended recommended)throws BaseException{
+			Connection conn=null;
+			String name=recommended.getrec_commodity_name();
+				try {
+					conn=DBUtil.getConnection();
+			
+			  String sql="delete from recommended where rec_commodity_name = ?";
+			  java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+				 pst.setString(1,name);
+				 pst.execute();
+				pst.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+					throw new DbException(ex);
+					
+				}
+				finally{
+					if(conn!=null)
+						try {
+							conn.close();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+				
+			
+		}
+		
+	@Override
+	public CommodityInformation addRecommendedCommodity(String commodityName,String describe,Menu curMenu)throws BaseException{
+		if(commodityName==null || "".equals(commodityName) ){
+			throw new BusinessException("推荐商品名不能为空");
+		}
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select count(*) from commodity_information where commodity_name =? " ;
+			 java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			 pst.setString(1,commodityName);
+			java.sql.ResultSet rs=pst.executeQuery();
+			rs.next();
+			if(rs.getInt(1)==0) {
+					rs.close();
+					pst.close();
+					throw new BusinessException("该商品不存在");
+				}
+			rs.close();
+			pst.close();
+			sql="select count(*) from recommended where rec_commodity_name =? and rec_menu_id =?" ;
+			 pst=conn.prepareStatement(sql);
+			 pst.setString(1,commodityName);
+			 pst.setInt(2, curMenu.getMenu_id());
+			 rs=pst.executeQuery();
+			if(rs.next()) 
+				if(rs.getInt(1)>0) {
+					rs.close();
+					pst.close();
+					throw new BusinessException("该菜谱中该商品已存在");
+				}
+			rs.close();
+			pst.close();
+		   sql="insert into recommended(rec_commodity_name,rec_menu_id,rec_describe) values(?,?,?)";
+			 pst=conn.prepareStatement(sql);
+			pst.setString(1, commodityName);
+			pst.setInt(2, curMenu.getMenu_id());
+			pst.setString(3, describe);
+			pst.execute();
+			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DbException(e);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return null;
+		}
+	
+	@Override
+	public void deleteMenu(Menu curMenu) throws BaseException{
+		Connection conn=null;
+		   int MenuId =curMenu.getMenu_id();
+			try {
+				conn=DBUtil.getConnection();
+				String sql="select count(*) from recommended where rec_menu_id = "+MenuId;
+				java.sql.Statement st=conn.createStatement();
+				java.sql.ResultSet rs=st.executeQuery(sql);
+				if(rs.next()) 
+				if(rs.getInt(1)>0) {
+					rs.close();
+					st.close();
+					throw new BusinessException("存在推荐商品，不能删除");
+				}
+		     rs.close();
+		     sql="delete from menu where menu_id = "+MenuId;
+		     st.execute(sql);
+		     st.close();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				throw new DbException(ex);
+			}
+			finally{
+				if(conn!=null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+	}
+	@Override
+	public List<Recommended> loadRecommendedCommodity(Menu curMenu)throws BaseException{
+		List<Recommended> result=new ArrayList<Recommended>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select rec_commodity_name,rec_describe,rec_menu_id from recommended where rec_menu_id = ?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,curMenu.getMenu_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 Recommended p =new Recommended();
+			 p.setrec_commodity_name(rs.getString(1));
+			 p.setRec_describe(rs.getString(2));
+			 p.setRec_menu_id(rs.getInt(3));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+	}
+	@Override
+	public List<Menu> loadMenu()throws BaseException{
+		List<Menu> result=new ArrayList<Menu>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select menu_id,menu_name,menu_materials,menu_step,menu_picture from menu  order by menu_id";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 Menu p =new Menu();
+			 p.setMenu_id(rs.getInt(1));
+			 p.setMenu_name(rs.getString(2));
+			 p.setMenu_materials(rs.getString(3));
+			 p.setMenu_step(rs.getString(4));
+			 p.setMenu_picture(rs.getString(5));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+		
+	}
+	
+	
+	@Override
+	public Menu createMenu(String menu_name,String menu_materials,String menu_step, String menu_picture) throws BaseException {
+		if(menu_name==null || "".equals(menu_name) ){
+				throw new BusinessException("菜谱名不能为空");
+			}
+		if(menu_materials==null || "".equals(menu_materials)){
+			throw new BusinessException("菜谱材料不能为空");
+		}
+		if(menu_step==null || "".equals(menu_step) ){
+			throw new BusinessException("菜谱步骤不能为空");
+		}
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select count(*) from menu where menu_name =?" ;
+			 java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			 pst.setString(1,menu_name);
+			java.sql.ResultSet rs=pst.executeQuery();
+			if(rs.next()) 
+				if(rs.getInt(1)>0) {
+					rs.close();
+					pst.close();
+					throw new BusinessException("菜谱已存在");
+				}
+			rs.close();
+			pst.close();
+		   sql="insert into menu(menu_name,menu_materials,menu_step,menu_picture) "
+					+ "values(?,?,?,?)";
+			 pst=conn.prepareStatement(sql);
+			pst.setString(1, menu_name);
+			pst.setString(2, menu_materials);
+			pst.setString(3, menu_step);
+		    pst.setString(4,menu_picture);
+			pst.execute();
+			pst.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DbException(e);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		return null;
+		
+	}
+	
 	@Override
 	public List<CommodityInformation> loadCommodity(FreshCategory curPlan)throws BaseException{
 		List<CommodityInformation> result=new ArrayList<CommodityInformation>();

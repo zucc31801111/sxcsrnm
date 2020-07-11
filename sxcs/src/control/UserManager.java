@@ -9,6 +9,7 @@ import model.CommodityInformation;
 import model.DeliveryAddressList;
 import model.FreshCategory;
 import model.Promotion;
+import model.Recommended;
 import model.UserInf;
 import model.UserShopcar;
 import util.BaseException;
@@ -17,6 +18,162 @@ import util.DBUtil;
 import util.DbException;
 
 public class UserManager implements IUserManager{
+	@Override
+	public UserShopcar addUserShopcartwo(int sum,Recommended recommended)throws BaseException{
+		if(sum<0 ){
+			throw new BusinessException("数量应大于0");
+		}
+		
+		int allsum=sum;
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select commodity_id,commodity_name,commodity_price,commodity_vip_price,commodity_number,commodity_specifications,commodity_describe,commodity_category_id from commodity_information "
+					+ "where commodity_name = ? ";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setString(1,recommended.getrec_commodity_name());
+			java.sql.ResultSet rs=pst.executeQuery();
+			rs.next();
+			 CommodityInformation commodity1 =new CommodityInformation();
+			 commodity1.setCommodity_id(rs.getInt(1));
+			 commodity1.setCommodity_name(rs.getString(2));
+			 commodity1.setCommodity_price(rs.getFloat(3));
+			 commodity1.setCommodity_vip_price(rs.getFloat(4));
+			 commodity1.setCommodity_number(rs.getInt(5));
+			 commodity1.setCommodity_specifications(rs.getString(6));
+			 commodity1.setCommodity_describe(rs.getString(7));
+			 commodity1.setCommodity_category_id(rs.getInt(8)); 
+			 rs.close();
+			pst.close();
+			
+			if(commodity1.getCommodity_number()<sum) {
+				throw new BusinessException("选购数量大于库存");
+			}
+			
+			
+		 sql="select sum(shopcar_commodity_sum) from user_shopcar where shopcar_commodity_id = ? and shopcar_user_id=?";
+		 pst=conn.prepareStatement(sql);
+		 pst.setInt(1,commodity1.getCommodity_id());
+		 pst.setString(2,UserInf.currentLoginUser.getUser_id());
+		 rs=pst.executeQuery();
+		 rs.next();
+		 if(rs.getInt(1)>0) {
+			allsum=rs.getInt(1)+sum;
+			rs.close();
+			pst.close();
+			if(commodity1.getCommodity_number()<allsum) {
+				throw new BusinessException("选购数量大于库存");
+			}
+			sql="update user_shopcar set shopcar_commodity_sum = ? where shopcar_commodity_id = ?";
+			pst=conn.prepareStatement(sql);
+			pst.setInt(1,allsum);
+			pst.setInt(2,commodity1.getCommodity_id());
+			pst.execute();
+			pst.close();
+			
+		}
+		else {
+			rs.close();
+			pst.close();
+			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice) "
+					+ "values(?,?,?,?,?,?)";
+		    pst=conn.prepareStatement(sql);
+			pst.setString(1, UserInf.currentLoginUser.getUser_id());
+			pst.setInt(2, commodity1.getCommodity_id());
+			pst.setString(3, commodity1.getCommodity_name());
+			pst.setInt(4, allsum);
+			pst.setFloat(5,commodity1.getCommodity_price());
+			pst.setFloat(6, commodity1.getCommodity_vip_price());
+			pst.execute();
+			pst.close();
+			
+		}
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DbException(e);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return null;
+	}
+	
+	
+	@Override
+	public void changeShopcar(UserShopcar shopcar,int sum)throws BaseException{
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+		String sql="select commodity_number from commodity_information where commodity_id = ?";	
+		java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+		pst.setInt(1,shopcar.getShopcar_commodity_id());
+		java.sql.ResultSet rs=pst.executeQuery();
+		if(rs.next()) {
+		if(rs.getInt(1)<sum) {
+			rs.close();
+			pst.close();
+			throw new BusinessException("选购数量大于库存");
+		}
+		}
+		rs.close();
+		pst.close();
+	   sql="update user_shopcar set shopcar_commodity_sum = ? where shopcar_commodity_id = ?";
+	   pst=conn.prepareStatement(sql);
+		pst.setInt(1,sum);
+		pst.setInt(2,shopcar.getShopcar_commodity_id());
+		pst.execute();
+		pst.close();
+	    
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+			
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	@Override
+	public void deleteShopcar(UserShopcar shopcar) throws BaseException {
+		Connection conn=null;
+		int commodityId =shopcar.getShopcar_commodity_id();
+			try {
+				conn=DBUtil.getConnection();
+		java.sql.Statement st=conn.createStatement();
+		  String sql="delete from user_shopcar where shopcar_commodity_id = "+commodityId;
+		     st.execute(sql);
+		     st.close();
+		    
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				throw new DbException(ex);
+				
+			}
+			finally{
+				if(conn!=null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			
+	}	
 	
 	@Override
 	public UserShopcar addUserShopcar(int sum,CommodityInformation commodity)throws BaseException{
@@ -36,7 +193,8 @@ public class UserManager implements IUserManager{
 		pst.setInt(1,commodity.getCommodity_id());
 		pst.setString(2,UserInf.currentLoginUser.getUser_id());
 		java.sql.ResultSet rs=pst.executeQuery();
-		if(rs.next()) {
+		rs.next();
+		if(rs.getInt(1)>0) {
 			allsum=rs.getInt(1)+sum;
 			rs.close();
 			pst.close();
@@ -49,6 +207,7 @@ public class UserManager implements IUserManager{
 			pst.setInt(2,commodity.getCommodity_id());
 			pst.execute();
 			pst.close();
+			
 		}
 		else {
 			rs.close();
@@ -64,6 +223,7 @@ public class UserManager implements IUserManager{
 			pst.setFloat(6, commodity.getCommodity_vip_price());
 			pst.execute();
 			pst.close();
+			
 		}
 		    
 		} catch (SQLException e) {

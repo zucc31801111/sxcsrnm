@@ -118,7 +118,8 @@ public class FrmUserMain extends JFrame implements ActionListener{
     	   dlg.setVisible(true);
 		}
       else if(e.getSource() == this.menuItem_Menu) {
-	
+    	  FrmUserMenu dlg=new FrmUserMenu();
+   	   dlg.setVisible(true);
 }
 	}
 	

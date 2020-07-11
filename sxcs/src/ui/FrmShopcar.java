@@ -11,6 +11,9 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,9 +26,16 @@ import starter.SXCSUtil;
 import util.BaseException;
 
 public class FrmShopcar extends JFrame implements ActionListener{
+	
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-
+	private JMenuBar shopcarbar=new JMenuBar(); 
+    private JMenu shopcar_Manager=new JMenu("商品管理");
+    private JMenu shopcar_Settle=new JMenu("商品结算");
+    
+    private JMenuItem  shopcarItem_Change =new JMenuItem("修改商品数量");
+    private JMenuItem  shopcarItem_Delete =new JMenuItem("删除商品");
+    
+    private JMenuItem  shopcarItem_Settle =new JMenuItem("结算");
 	/**
 	 * Launch the application.
 	 */
@@ -75,7 +85,23 @@ private void reloadShopcarTable(){
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 			this.setTitle("购物车");
 		
-		
+			shopcar_Manager.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+			shopcarItem_Change.setFont(new Font("宋体", Font.PLAIN, 15));
+			shopcar_Manager.add(this.shopcarItem_Change);
+			shopcarItem_Change.addActionListener(this);
+			shopcarItem_Delete.setFont(new Font("宋体", Font.PLAIN, 15));
+			shopcar_Manager.add(this.shopcarItem_Delete);
+			shopcarItem_Delete.addActionListener(this);
+			shopcarbar.add(shopcar_Manager);
+			
+			
+			shopcar_Settle.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+			shopcarItem_Settle.setFont(new Font("宋体", Font.PLAIN, 15));
+			shopcar_Settle.add(this.shopcarItem_Settle);
+			shopcarItem_Settle.addActionListener(this);
+			shopcarbar.add(shopcar_Settle);
+			this.setJMenuBar(shopcarbar);
+			
 		   FrmShopcar.this.reloadShopcarTable();
 		    this.getContentPane().add(new JScrollPane(this.dataTableShopcar), BorderLayout.CENTER);
 		    this.dataTableShopcar.addMouseListener(new MouseAdapter (){
@@ -94,6 +120,33 @@ private void reloadShopcarTable(){
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==this.shopcarItem_Delete){
+			int i=FrmShopcar.this.dataTableShopcar.getSelectedRow();
+			if(i<0) {
+				JOptionPane.showMessageDialog(null, "请选择商品", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			try {
+				SXCSUtil.userManager.deleteShopcar(this.allShopcar.get(i));
+			} catch (BaseException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+		}
+		else if(e.getSource()==this.shopcarItem_Change) {
+			int i=FrmShopcar.this.dataTableShopcar.getSelectedRow();
+			if(i<0) {
+				JOptionPane.showMessageDialog(null, "请选择商品", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			FrmShopcarChange dlg=new FrmShopcarChange();
+			dlg.shopcar=this.allShopcar.get(i);
+			dlg.setVisible(true);
+		}
+		else if(e.getSource()==this.shopcarItem_Settle) {
+			
+		}
 		
 	}
 

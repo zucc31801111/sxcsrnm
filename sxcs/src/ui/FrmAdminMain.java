@@ -55,15 +55,13 @@ public class FrmAdminMain extends JFrame implements ActionListener {
     private JMenuItem  menuItem_MenuManager=new JMenuItem("菜谱管理");
     private JMenuItem  menuItem_CommodityAdd=new JMenuItem("添加商品");
     private JMenuItem  menuItem_CommodityDelete=new JMenuItem("删除商品");
+    private JMenuItem  menuItem_CommodityChange=new JMenuItem("修改商品");
     private JMenuItem  menuItem_CommodityPurchase=new JMenuItem("采购商品");
     private JMenuItem  menuItem_CommodityPurchaseList=new JMenuItem("商品采购表");
     private JMenuItem  menuItem_CommodityDiscount=new JMenuItem("满折管理");
     private JMenuItem  menuItem_Promotion=new JMenuItem("限时促销管理");
     private JMenuItem  menuItem_Coupon=new JMenuItem("优惠券管理");
     
-    
-    
-	//private FrmLogin dlgLogin=null;
 	private JPanel statusBar = new JPanel();
 	
 	private Object tblCategoryTitle[]=FreshCategory.tblCategoryTitle;
@@ -169,7 +167,10 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 		    menuItem_MenuManager.addActionListener(this);
 		    menuItem_CommodityAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityAdd);
-		    menuItem_CommodityAdd.addActionListener(this);
+		    menuItem_CommodityAdd.addActionListener(this);    
+		    menuItem_CommodityChange.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Commodity.add(this.menuItem_CommodityChange);
+		    menuItem_CommodityChange.addActionListener(this);
 		    menuItem_CommodityDelete.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityDelete);
 		    menuItem_CommodityDelete.addActionListener(this);
@@ -272,6 +273,16 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 				FrmCategoryAdd dlg=new FrmCategoryAdd();
 				dlg.setVisible(true);
 			}
+			else if(e.getSource()==this.menuItem_CommodityChange) {
+				int i=FrmAdminMain.this.dataTableCommodity.getSelectedRow();
+				if(i<0) {
+					JOptionPane.showMessageDialog(null, "请选择商品", "错误",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				FrmCommodityChange dlg=new FrmCommodityChange();
+				dlg.commodity1=this.categoryCommodity.get(i);
+				dlg.setVisible(true);
+			}
 			
 			else if(e.getSource()==this.menuItem_CommodityPurchase){
 				int i=FrmAdminMain.this.dataTableCommodity.getSelectedRow();
@@ -304,8 +315,8 @@ public class FrmAdminMain extends JFrame implements ActionListener {
 				dlg.setVisible(true);
 			}
 			else if(e.getSource()==this.menuItem_Coupon){
-				//FrmBookLendStatic dlg=new FrmBookLendStatic(this,"图书借阅统计",true);
-				//dlg.setVisible(true);
+				FrmCoupon dlg=new FrmCoupon();
+				dlg.setVisible(true);
 			}
 			
 		}

@@ -26,6 +26,8 @@ public interface ICommodityManager {
 	
 	public void deleteCommodity(CommodityInformation commodity) throws BaseException;
 	
+	public void changeCommodity(String commodityName,float commodityPrice,float vipPrice,String commodityspec,String commoditydesc,CommodityInformation commodity)throws BaseException;
+	
 	public void deleteCategory(FreshCategory category) throws BaseException;
 
 	public void deletePromotion(Promotion promotion) throws BaseException;

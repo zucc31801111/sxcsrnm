@@ -21,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import model.Coupon;
+import model.DeliveryAddressList;
 import model.UserShopcar;
 import starter.SXCSUtil;
 import util.BaseException;
@@ -44,9 +46,20 @@ public class FrmShopcar extends JFrame implements ActionListener{
 	DefaultTableModel tabShopcarModel=new DefaultTableModel();
 	private JTable dataTableShopcar=new JTable(tabShopcarModel);
 	
+	private Object tblAddressTitle[]=DeliveryAddressList.tblAddressTitle;
+	private Object tblAddressData[][];
+	DefaultTableModel tabAddressModel=new DefaultTableModel();
+	private JTable dataTableAddress=new JTable(tabAddressModel);
+	
+    private Object tblCouponTitle[]=Coupon.tblCouponTitle;
+	private Object tblCouponData[][];
+	DefaultTableModel tabCouponModel=new DefaultTableModel();
+	private JTable dataTableCoupon=new JTable(tabCouponModel);
+	
 	private UserShopcar curShopcar=null;
 	List<UserShopcar> allShopcar=null;
-	
+	List<DeliveryAddressList> allAddress=null;
+	List<Coupon> allCoupon=null;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -77,6 +90,42 @@ private void reloadShopcarTable(){
 		this.dataTableShopcar.repaint();
 	}
 	
+
+private void reloadAddressTable(){
+	
+	try {
+		allAddress=SXCSUtil.userManager.loadAddress();
+	} catch (BaseException e) {
+		JOptionPane.showMessageDialog(null, e.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+		return;
+	}
+	tblAddressData =  new Object[allAddress.size()][DeliveryAddressList.tblAddressTitle.length];
+	for(int i=0;i<allAddress.size();i++){
+		for(int j=0;j<DeliveryAddressList.tblAddressTitle.length;j++)
+			tblAddressData[i][j]=allAddress.get(i).getCell(j);
+	}
+	tabAddressModel.setDataVector(tblAddressData,tblAddressTitle);
+	this.dataTableAddress.validate();
+	this.dataTableAddress.repaint();
+}
+
+private void reloadCouponTable(){
+	try {
+		allCoupon=SXCSUtil.adminManager.loadCoupon();
+	} catch (BaseException e) {
+		JOptionPane.showMessageDialog(null, e.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+		return;
+	}
+	tblCouponData =  new Object[allCoupon.size()][Coupon.tblCouponTitle.length];
+	for(int i=0;i<allCoupon.size();i++){
+		for(int j=0;j<Coupon.tblCouponTitle.length;j++)
+			tblCouponData[i][j]=allCoupon.get(i).getCell(j);
+	}
+	tabCouponModel.setDataVector(tblCouponData,tblCouponTitle);
+	this.dataTableCoupon.validate();
+	this.dataTableCoupon.repaint();
+}
+
 	/**
 	 * Create the frame.
 	 */
@@ -103,7 +152,11 @@ private void reloadShopcarTable(){
 			this.setJMenuBar(shopcarbar);
 			
 		   FrmShopcar.this.reloadShopcarTable();
-		    this.getContentPane().add(new JScrollPane(this.dataTableShopcar), BorderLayout.CENTER);
+		   FrmShopcar.this.reloadAddressTable();
+		   FrmShopcar.this.reloadCouponTable();
+		   this.getContentPane().add(new JScrollPane(this.dataTableAddress), BorderLayout.CENTER);
+		    this.getContentPane().add(new JScrollPane(this.dataTableShopcar), BorderLayout.WEST);
+		    this.getContentPane().add(new JScrollPane(this.dataTableCoupon), BorderLayout.EAST);
 		    this.dataTableShopcar.addMouseListener(new MouseAdapter (){
 
 				@Override

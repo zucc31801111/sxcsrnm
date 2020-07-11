@@ -37,13 +37,17 @@ public class FrmUserMain extends JFrame implements ActionListener{
     private JMenu menu_CommodityOrderManager=new JMenu("商品订单管理");
     private JMenu menu_CommodityManager=new JMenu("商品列表");
     private JMenu menu_MenuManager=new JMenu("推荐菜谱");
+    private JMenu menu_Shopcar=new JMenu("购物车");
+    
     
     private JMenuItem  menuItem_ChangePwd=new JMenuItem("修改密码");
     private JMenuItem  menuItem_Address =new JMenuItem("地址信息表");
     private JMenuItem  menuItem_CommodityOrder=new JMenuItem("订单表");
     private JMenuItem  menuItem_Commodity=new JMenuItem("商品列表");
+    private JMenuItem  menuItem_CommodityPromotion=new JMenuItem("促销商品列表");
+    private JMenuItem  menuItem_CommodityDiscount=new JMenuItem("满折商品列表");
     private JMenuItem  menuItem_Menu=new JMenuItem("菜谱列表");
-
+    private JMenuItem  menuItem_ShopcarLook=new JMenuItem("查看购物车");
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -83,7 +87,13 @@ public class FrmUserMain extends JFrame implements ActionListener{
 		    menu_CommodityManager.setFont(new Font("新宋体", Font.PLAIN, 15));
 		    menuItem_Commodity.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_CommodityManager.add(menuItem_Commodity);
-		    menuItem_Commodity.addActionListener(this);
+		    menuItem_Commodity.addActionListener(this);		    
+		    menuItem_CommodityPromotion.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_CommodityManager.add(menuItem_CommodityPromotion);
+		    menuItem_CommodityPromotion.addActionListener(this);	
+		    menuItem_CommodityDiscount.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_CommodityManager.add(menuItem_CommodityDiscount);
+		    menuItem_CommodityDiscount.addActionListener(this);
 		    menubar.add(menu_CommodityManager);
 		    
 		    menu_MenuManager.setFont(new Font("新宋体", Font.PLAIN, 15));
@@ -91,6 +101,12 @@ public class FrmUserMain extends JFrame implements ActionListener{
 		    menu_MenuManager.add(menuItem_Menu);
 		    menuItem_Menu.addActionListener(this);
 		    menubar.add(menu_MenuManager);
+		    
+		    menu_Shopcar.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menuItem_ShopcarLook.setFont(new Font("宋体", Font.PLAIN, 15));
+			menu_Shopcar.add(this.menuItem_ShopcarLook);
+			menuItem_ShopcarLook.addActionListener(this);
+		    menubar.add(menu_Shopcar);
 		    
 		    this.setJMenuBar(menubar);
 		    
@@ -117,10 +133,22 @@ public class FrmUserMain extends JFrame implements ActionListener{
     	   FrmCommodityList dlg=new FrmCommodityList();
     	   dlg.setVisible(true);
 		}
+       else if(e.getSource() == this.menuItem_CommodityPromotion) {
+    	   FrmUserPromotion dlg=new FrmUserPromotion();
+    	   dlg.setVisible(true);
+		}
+       else if(e.getSource() == this.menuItem_CommodityDiscount) {
+    	  // FrmCommodityList dlg=new FrmCommodityList();
+    	 //  dlg.setVisible(true);
+		}
       else if(e.getSource() == this.menuItem_Menu) {
     	  FrmUserMenu dlg=new FrmUserMenu();
    	   dlg.setVisible(true);
 }
+      else if(e.getSource()==this.menuItem_ShopcarLook) {
+			FrmShopcar dlg=new FrmShopcar();
+			dlg.setVisible(true);
+		}
 	}
 	
 	

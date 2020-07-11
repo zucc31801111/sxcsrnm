@@ -2,17 +2,133 @@ package control;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import itl.IAdminManager;
 import model.AdminInformation;
+import model.CommodityInformation;
+import model.Coupon;
+import model.Promotion;
+import model.UserInf;
+import model.UserShopcar;
 import util.BaseException;
 import util.BusinessException;
 import util.DBUtil;
 import util.DbException;
 
 public class AdminManager implements IAdminManager{
-	@Override
 	
+	@Override
+public void addCoupon( String coupon_content , float coupon_pricedel, float coupon_price, String coupon_start_time,String coupon_end_time) throws BaseException{
+		Connection conn=null;
+		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(coupon_pricedel<=0||coupon_price<=0) {
+			throw new BusinessException("价格应大于0");
+		}
+		if("".equals(coupon_start_time) ||coupon_start_time==null) {
+			throw new BaseException("开始时间不能为空");
+		}
+		if("".equals(coupon_end_time) ||coupon_end_time==null) {
+			throw new BaseException("结束时间不能为空");
+		}
+		try {
+			conn=DBUtil.getConnection();
+			Date timeone=time.parse(coupon_start_time);
+		    Date timetwo=time.parse(coupon_end_time);
+	    
+		String  sql="insert into coupon(coupon_content,coupon_price,coupon_pricedel,coupon_start_time,coupon_end_time)values(?,?,?,?,?)";
+		 java.sql.PreparedStatement   pst=conn.prepareStatement(sql);
+			 pst.setString(1,coupon_content);
+			 pst.setFloat(2,coupon_price);
+			 pst.setFloat(3,coupon_pricedel);
+			 pst.setDate(4,new java.sql.Date(timeone.getTime()));
+			 pst.setDate(5,new java.sql.Date(timetwo.getTime()));
+			 pst.execute();
+			 pst.close();
+		} catch (SQLException | ParseException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	@Override
+	public void deleteCoupon(Coupon coupon) throws BaseException {
+		Connection conn=null;
+		int couponId =coupon.getCoupon_id();
+			try {
+		conn=DBUtil.getConnection();
+		java.sql.Statement st=conn.createStatement();
+		  String sql="delete from coupon where coupon_id = "+couponId;
+		  st.execute(sql);
+		     st.close();
+		    
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				throw new DbException(ex);
+				
+			}
+			finally{
+				if(conn!=null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}	
+	}
+	
+	@Override
+	public List<Coupon> loadCoupon()throws BaseException{
+		List<Coupon> result=new ArrayList<Coupon>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select coupon_id,coupon_content,coupon_price,coupon_pricedel,coupon_start_time,coupon_end_time from coupon";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 Coupon p =new Coupon();
+			 p.setCoupon_id(rs.getInt(1));
+			 p.setCoupon_content(rs.getString(2));
+			 p.setCoupon_price(rs.getFloat(3));
+			 p.setCoupon_pricedel(rs.getFloat(4));
+			 p.setCoupon_start_time(rs.getDate(5));
+			 p.setCoupon_end_time(rs.getDate(6));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		return result;
+	}
+	
+	@Override
 	public AdminInformation login(String adminid, String pwd) throws BaseException {
 		
 		if("".equals(adminid) ||adminid==null){

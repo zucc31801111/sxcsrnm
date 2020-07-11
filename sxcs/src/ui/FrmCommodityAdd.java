@@ -35,15 +35,8 @@ public class FrmCommodityAdd extends JFrame implements ActionListener{
 	private  JButton btesc;
 	private JTextField textDesc;
 
-	/**
-	 * Launch the application.
-	 */
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public FrmCommodityAdd() {
-		///super(f, s, b);
 		setTitle("商品添加");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 404, 439);
@@ -118,11 +111,7 @@ public class FrmCommodityAdd extends JFrame implements ActionListener{
 		btconfirm.addActionListener(this);
 		btesc.addActionListener(this);
 		
-		/*this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});*/
+		
 	}
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.btconfirm){

@@ -310,17 +310,18 @@ public class CommodityManager implements ICommodityManager{
 		Connection conn=null;
 		try {
 			conn=DBUtil.getConnection();
-			String sql="select promotion_id,promotion_commodity_id,promotion_price,promotion_sum,promotion_start_time ,promotion_end_time from promotion order by promotion_id";
+			String sql="select promotion_id,promotion_commodity_id,promotion_commodity_name,promotion_price,promotion_sum,promotion_start_time ,promotion_end_time from promotion order by promotion_id";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			java.sql.ResultSet rs=pst.executeQuery();
 		 while(rs.next()) {
 			 Promotion p =new Promotion();
 			 p.setPromotion_id(rs.getInt(1));
 			 p.setPromotion_commodity_id(rs.getInt(2));
-			 p.setPromotion_price(rs.getFloat(3));
-			 p.setPromotion_sum(rs.getInt(4));
-			 p.setPromotion_start_time(rs.getDate(5));
-			 p.setPromotion_end_time(rs.getDate(6));
+			 p.setPromotion_commodity_name(rs.getString(3));
+			 p.setPromotion_price(rs.getFloat(4));
+			 p.setPromotion_sum(rs.getInt(5));
+			 p.setPromotion_start_time(rs.getDate(6));
+			 p.setPromotion_end_time(rs.getDate(7));
 			 result.add(p);
 		} 
 		 }catch (SQLException ex) {
@@ -409,6 +410,93 @@ public class CommodityManager implements ICommodityManager{
 		
 		
 	}
+	@Override
+	public void changeCommodity(String commodityName,float commodityPrice,float vipPrice,String commodityspec,String commoditydesc,CommodityInformation commodity)throws BaseException{
+		if(commodityName==null || "".equals(commodityName) ){
+			throw new BusinessException("商品名不能为空");
+		}
+		if(commodityPrice<=0 ){
+			throw new BusinessException("价格应大于0");
+		}
+		if(vipPrice<=0){
+			throw new BusinessException("vip价格应大于0");
+		}
+		if(commodityPrice<=vipPrice){
+			throw new BusinessException("vip价格应大于原价格");
+		}
+		if(commodityspec==null || "".equals(commodityspec) ){
+			throw new BusinessException("商品规格不能为空");
+		}
+		if(commoditydesc==null || "".equals(commoditydesc) ){
+			throw new BusinessException("商品描述不能为空");
+			}
+			Connection conn=null;
+			try {
+				conn=DBUtil.getConnection();
+				
+				String	sql="select count(*) from recommended where rec_commodity_name =?";
+				java.sql.PreparedStatement  pst=conn.prepareStatement(sql);
+				pst.setString(1,commodityName);
+				java.sql.ResultSet rs=pst.executeQuery();
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
+						rs.close();
+						pst.close();
+						throw new BusinessException("商品存在推荐菜谱中，请先删除推荐商品");
+					}
+				
+			   sql="select count(*) from user_shopcar where shopcar_commodity_name =?";
+				pst=conn.prepareStatement(sql);
+				pst.setString(1,commodityName);
+			   rs=pst.executeQuery();
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
+						rs.close();
+						pst.close();
+						throw new BusinessException("商品存在用户购物车中，无法修改");
+					}
+				rs.close();
+				pst.close();
+				sql="select count(*) from commodity_information where commodity_name =?" ;
+				 pst=conn.prepareStatement(sql);
+				 pst.setString(1,commodityName);
+				 rs=pst.executeQuery();
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
+						rs.close();
+						pst.close();
+						throw new BusinessException("商品已存在");
+					}
+				rs.close();
+				pst.close();
+				
+				 
+				
+			   sql="update commodity_information set commodity_name= ?,commodity_price= ?,commodity_vip_price= ?,commodity_specifications= ?,commodity_describe= ? where commodity_id= ?";
+				 pst=conn.prepareStatement(sql);
+				pst.setString(1, commodityName);
+				pst.setFloat(2, commodityPrice);
+				pst.setFloat(3, vipPrice);
+				pst.setString(4, commodityspec);
+				pst.setString(5, commoditydesc);
+				pst.setInt(6, commodity.getCommodity_id());
+				pst.execute();
+				pst.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DbException(e);
+			}
+			finally{
+				if(conn!=null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		}
+	
 	
 	@Override
 	
@@ -421,6 +509,9 @@ public class CommodityManager implements ICommodityManager{
 		}
 		if(vipPrice<=0){
 			throw new BusinessException("vip价格应大于0");
+		}
+		if(commodityPrice<=vipPrice){
+			throw new BusinessException("vip价格应大于原价格");
 		}
 		if(commodityspec==null || "".equals(commodityspec) ){
 			throw new BusinessException("商品规格不能为空");
@@ -443,6 +534,7 @@ public class CommodityManager implements ICommodityManager{
 				}
 			rs.close();
 			pst.close();
+
 		   sql="insert into commodity_information(commodity_name,commodity_price,commodity_vip_price,commodity_number,commodity_specifications,commodity_describe,commodity_category_id) "
 					+ "values(?,?,?,?,?,?,?)";
 			 pst=conn.prepareStatement(sql);
@@ -476,8 +568,30 @@ public class CommodityManager implements ICommodityManager{
 		int commodityId =commodity.getCommodity_id();
 			try {
 				conn=DBUtil.getConnection();
-		java.sql.Statement st=conn.createStatement();
-		  String sql="delete from commodity_information where commodity_id = "+commodityId;
+				String sql="select count(*) from recommended where rec_commodity_name=?";
+				java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+				pst.setString(1,commodity.getCommodity_name());
+				java.sql.ResultSet rs=pst.executeQuery();
+				if(rs.next()) {
+					rs.close();
+					pst.close();
+					throw new BusinessException("商品存在菜谱推荐商品中无法删除，请先删除推荐商品");
+				}
+				rs.close();
+				pst.close();
+				
+				sql="select count(*) from user_shopcar where shopcar_commodity_name =?";
+				pst=conn.prepareStatement(sql);
+				pst.setString(1,commodity.getCommodity_name());
+			   rs=pst.executeQuery();
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
+						rs.close();
+						pst.close();
+						throw new BusinessException("商品存在用户购物车中，无法删除");
+					}
+		     java.sql.Statement st=conn.createStatement();
+		   sql="delete from commodity_information where commodity_id = "+commodityId;
 		     st.execute(sql);
 		     st.close();
 		    
@@ -621,22 +735,50 @@ public class CommodityManager implements ICommodityManager{
 	}
 	@Override
 	public void addPromotion(int commodityid, float price , int sum, String starttime, String endtime) throws BaseException{
-		
+		if(price<=0) {
+			throw new BusinessException("价格应大于0");
+		}
+		if(sum<=0) {
+			throw new BusinessException("数量应大于0");
+		}
+		if("".equals(starttime) ||starttime==null) {
+			throw new BaseException("开始时间不能为空");
+		}
+		if("".equals(endtime) ||endtime==null) {
+			throw new BaseException("结束时间不能为空");
+		}
 		Connection conn=null;
 		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd");
 		int number=0;
+		float iprice=0;
+		String name =null;
 		try {
 			conn=DBUtil.getConnection();
 			Date timeone=time.parse(starttime);
 		    Date timetwo=time.parse(endtime);
-		    
-		String sql="select commodity_number from commodity_information where commodity_id = ?";
-		java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+		    String sql="select count(*) from promotion where promotion_commodity_id = ?";
+		    java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,commodityid);
+			pst.execute();
+			java.sql.ResultSet rs=pst.executeQuery();
+			rs.next();
+			if(rs.getInt(1)>0) {
+				rs.close();
+				 pst.close();
+				throw new BusinessException("该商品已在促销");
+			}
+			rs.close();
+			 pst.close();
+		sql="select commodity_name,commodity_number,commodity_price from commodity_information where commodity_id = ?";
+		 pst=conn.prepareStatement(sql);
 		pst.setInt(1,commodityid);
 		pst.execute();
-		java.sql.ResultSet rs=pst.executeQuery();
+		rs=pst.executeQuery();
 		if(rs.next()) {
-			number=rs.getInt(1);
+			name=rs.getString(1);
+			number=rs.getInt(2);
+			iprice=rs.getFloat(3);
+			
 			rs.close();
 		   pst.close();
 		}
@@ -649,15 +791,18 @@ public class CommodityManager implements ICommodityManager{
 		if(number<sum) {
 			throw new BusinessException("促销数量大于商品数量");
 		}
-	
+	if(price>=iprice) {
+		throw new BusinessException("促销价格应小于原价格");
+	}
 	    
-		 sql="insert into promotion(promotion_commodity_id,promotion_price,promotion_sum,promotion_start_time,promotion_end_time)values(?,?,?,?,?)";
+		 sql="insert into promotion(promotion_commodity_id,promotion_price,promotion_sum,promotion_start_time,promotion_end_time,promotion_commodity_name)values(?,?,?,?,?,?)";
 		     pst=conn.prepareStatement(sql);
 			 pst.setInt(1,commodityid);
 			 pst.setFloat(2,price);
 			 pst.setInt(3,sum);
 			 pst.setDate(4,new java.sql.Date(timeone.getTime()));
 			 pst.setDate(5,new java.sql.Date(timetwo.getTime()));
+			 pst.setString(6, name);
 			 pst.execute();
 			 pst.close();
 		} catch (SQLException | ParseException ex) {

@@ -127,12 +127,13 @@ public void actionPerformed(ActionEvent e) {
 		 float price=0;
 		 String starttime=null;
 		 String endtime=null;
+		 starttime=this.textstarttime.getText();
+		 endtime=this.textendtime.getText();
 		try {
 	     commodityid=Integer.parseInt(this.textid.getText());
 		 price=(float) Double.parseDouble(this.textprice.getText());
 		 sum=Integer.parseInt(this.textsum.getText());
-		 starttime=this.textstarttime.getText();
-		 endtime=this.textendtime.getText();
+	
 		}
 		catch (NumberFormatException e1) {
 			JOptionPane.showMessageDialog(null, "数字不能为空", "错误",JOptionPane.ERROR_MESSAGE);

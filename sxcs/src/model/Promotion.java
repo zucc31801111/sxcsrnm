@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 public class Promotion {
 	public static final String[] tblPromotionTitle={"序号","商品编号","商品名称","促销价格","数量","开始时间","结束时间"};
@@ -24,8 +25,8 @@ public class Promotion {
 	private String promotion_commodity_name;
 	private float promotion_price;
 	private int promotion_sum;
-	private Date promotion_start_time;
-	private Date promotion_end_time;
+	private Timestamp promotion_start_time;
+	private Timestamp promotion_end_time;
 	public int getPromotion_id() {
 		return promotion_id;
 	}
@@ -50,16 +51,16 @@ public class Promotion {
 	public void setPromotion_sum(int promotion_sum) {
 		this.promotion_sum = promotion_sum;
 	}
-	public Date getPromotion_start_time() {
+	public Timestamp getPromotion_start_time() {
 		return promotion_start_time;
 	}
-	public void setPromotion_start_time(Date promotion_start_time) {
+	public void setPromotion_start_time(Timestamp promotion_start_time) {
 		this.promotion_start_time = promotion_start_time;
 	}
-	public Date getPromotion_end_time() {
+	public Timestamp getPromotion_end_time() {
 		return promotion_end_time;
 	}
-	public void setPromotion_end_time(Date promotion_end_time) {
+	public void setPromotion_end_time(Timestamp promotion_end_time) {
 		this.promotion_end_time = promotion_end_time;
 	}
 	

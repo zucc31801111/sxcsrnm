@@ -12,6 +12,8 @@ import itl.ICommodityManager;
 import model.AdminInformation;
 import model.CommodityInformation;
 import model.CommodityPurchase;
+import model.DiscountCommodity;
+import model.DiscountInformation;
 import model.FreshCategory;
 import model.Menu;
 import model.Promotion;
@@ -22,6 +24,123 @@ import util.DBUtil;
 import util.DbException;
 
 public class CommodityManager implements ICommodityManager{
+	@Override
+	public List<DiscountCommodity> loadDiscountCommodity(DiscountInformation discountInformation)throws BaseException{
+		List<DiscountCommodity> result=new ArrayList<DiscountCommodity>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select list_discount_id,list_commodity_id,list_discount_start_time,list_discount_end_time from discount_commodity where list_discount_id = ?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,discountInformation.getDiscount_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 DiscountCommodity p =new DiscountCommodity();
+			 p.setList_discount_id(rs.getInt(1));
+			 p.setList_commodity_id(rs.getInt(2));
+			 p.setList_discount_start_time(rs.getTimestamp(3));
+			 p.setList_discount_end_time(rs.getTimestamp(4));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+	}
+	public DiscountInformation creatDiscountInformation(String discount_content,int discount_number,float discount_sum, String discount_start_time,String discount_end_time) throws BaseException {
+		
+		if(discount_content==null || "".equals(discount_content) ){
+			throw new BusinessException("满折内容不能为空");
+		}
+		if(discount_number<=0  ){
+				throw new BusinessException("适用商品数应大于0");
+			}
+		if(discount_sum<=0 ||discount_sum>=10 ){
+			throw new BusinessException("折扣应大于0且小于10");
+		}
+		if(discount_start_time==null || "".equals(discount_start_time)){
+			throw new BusinessException("开始时间不能为空");
+		}
+		if(discount_end_time==null || "".equals(discount_end_time) ){
+			throw new BusinessException("结束时间不能为空");
+		}
+		Connection conn=null;
+		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		try {
+			conn=DBUtil.getConnection();
+			Date timeone=time.parse(discount_start_time);
+		    Date timetwo=time.parse(discount_end_time);
+		    String sql="insert into discount_information(discount_content,discount_number,discount_sum,discount_start_time,discount_end_time)values(?,?,?,?,?)";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setString(1, discount_content);
+			pst.setInt(2, discount_number);
+			pst.setFloat(3, discount_sum);
+		    pst.setTimestamp(4,new java.sql.Timestamp(timeone.getTime()));
+			pst.setTimestamp(5,new java.sql.Timestamp(timetwo.getTime()));
+			 pst.execute();
+			 pst.close();
+		} catch (SQLException | ParseException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					
+					e.printStackTrace();
+				}	
+	}
+		return null;
+	}
+	@Override
+	public List<DiscountInformation> loadDiscountInformation()throws BaseException{	
+		List<DiscountInformation> result=new ArrayList<DiscountInformation>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select discount_id,discount_content,discount_number,discount_sum,discount_start_time,discount_end_time "
+					+ "from discount_information order by discount_id";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 DiscountInformation p =new DiscountInformation();
+			 p.setDiscount_id(rs.getInt(1));
+			 p.setDiscount_content(rs.getString(2));
+			 p.setDiscount_number(rs.getInt(3));
+			 p.setDiscount_sum(rs.getFloat(4));
+			 p.setDiscount_start_time(rs.getTimestamp(5));
+			 p.setDiscount_end_time(rs.getTimestamp(6));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+	}
 	@Override
 	public void deleteRecommendedCommodity(Recommended recommended)throws BaseException{
 			Connection conn=null;
@@ -320,8 +439,8 @@ public class CommodityManager implements ICommodityManager{
 			 p.setPromotion_commodity_name(rs.getString(3));
 			 p.setPromotion_price(rs.getFloat(4));
 			 p.setPromotion_sum(rs.getInt(5));
-			 p.setPromotion_start_time(rs.getDate(6));
-			 p.setPromotion_end_time(rs.getDate(7));
+			 p.setPromotion_start_time(rs.getTimestamp(6));
+			 p.setPromotion_end_time(rs.getTimestamp(7));
 			 result.add(p);
 		} 
 		 }catch (SQLException ex) {
@@ -572,7 +691,8 @@ public class CommodityManager implements ICommodityManager{
 				java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 				pst.setString(1,commodity.getCommodity_name());
 				java.sql.ResultSet rs=pst.executeQuery();
-				if(rs.next()) {
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
 					rs.close();
 					pst.close();
 					throw new BusinessException("商品存在菜谱推荐商品中无法删除，请先删除推荐商品");
@@ -748,7 +868,7 @@ public class CommodityManager implements ICommodityManager{
 			throw new BaseException("结束时间不能为空");
 		}
 		Connection conn=null;
-		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		int number=0;
 		float iprice=0;
 		String name =null;
@@ -800,8 +920,8 @@ public class CommodityManager implements ICommodityManager{
 			 pst.setInt(1,commodityid);
 			 pst.setFloat(2,price);
 			 pst.setInt(3,sum);
-			 pst.setDate(4,new java.sql.Date(timeone.getTime()));
-			 pst.setDate(5,new java.sql.Date(timetwo.getTime()));
+			 pst.setTimestamp(4,new java.sql.Timestamp(timeone.getTime()));
+			 pst.setTimestamp(5,new java.sql.Timestamp(timetwo.getTime()));
 			 pst.setString(6, name);
 			 pst.execute();
 			 pst.close();

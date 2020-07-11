@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -8,7 +9,7 @@ public class CommodityOrder {
 	private String order_user_id;
 	private float order_begin_price;
 	private float order_end_price;
-	private Date order_gettime;
+	private Timestamp order_gettime;
 	private int order_delivery_id;
 	private String order_state;
 	private int order_coupon_id;
@@ -36,10 +37,10 @@ public class CommodityOrder {
 	public void setOrder_end_price(float order_end_price) {
 		this.order_end_price = order_end_price;
 	}
-	public Date getOrder_gettime() {
+	public Timestamp getOrder_gettime() {
 		return order_gettime;
 	}
-	public void setOrder_gettime(Date order_gettime) {
+	public void setOrder_gettime(Timestamp order_gettime) {
 		this.order_gettime = order_gettime;
 	}
 	public int getOrder_delivery_id() {

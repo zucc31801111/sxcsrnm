@@ -34,6 +34,7 @@ public class FrmShopcar extends JFrame implements ActionListener{
     private JMenu shopcar_Manager=new JMenu("商品管理");
     private JMenu shopcar_Settle=new JMenu("商品结算");
     
+    private JMenuItem  shopcarItem_Flash =new JMenuItem("刷新");
     private JMenuItem  shopcarItem_Change =new JMenuItem("修改商品数量");
     private JMenuItem  shopcarItem_Delete =new JMenuItem("删除商品");
     
@@ -135,6 +136,10 @@ private void reloadCouponTable(){
 			this.setTitle("购物车");
 		
 			shopcar_Manager.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+			
+			shopcarItem_Flash.setFont(new Font("宋体", Font.PLAIN, 15));
+			shopcar_Manager.add(this.shopcarItem_Flash);
+			shopcarItem_Flash.addActionListener(this);
 			shopcarItem_Change.setFont(new Font("宋体", Font.PLAIN, 15));
 			shopcar_Manager.add(this.shopcarItem_Change);
 			shopcarItem_Change.addActionListener(this);
@@ -196,6 +201,11 @@ private void reloadCouponTable(){
 			FrmShopcarChange dlg=new FrmShopcarChange();
 			dlg.shopcar=this.allShopcar.get(i);
 			dlg.setVisible(true);
+		}
+      else if(e.getSource()==this.shopcarItem_Flash) {
+	   FrmShopcar.this.reloadShopcarTable();
+	   FrmShopcar.this.reloadAddressTable();
+	   FrmShopcar.this.reloadCouponTable();
 		}
 		else if(e.getSource()==this.shopcarItem_Settle) {
 			

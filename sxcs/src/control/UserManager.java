@@ -337,9 +337,9 @@ public class UserManager implements IUserManager{
 			u.setUser_phone(rs.getString(5));
 			u.setUser_mail(rs.getString(6));
 			u.setUser_city(rs.getString(7));
-			u.setUser_registration_time(rs.getDate(8));
+			u.setUser_registration_time(rs.getTimestamp(8));
 			u.setUser_vip(rs.getBoolean(9));
-			u.setUser_vip_end_time(rs.getDate(10));
+			u.setUser_vip_end_time(rs.getTimestamp(10));
 			result.add(u);
 			}
 			

@@ -4,6 +4,8 @@ import java.util.List;
 
 import model.CommodityInformation;
 import model.CommodityPurchase;
+import model.DiscountCommodity;
+import model.DiscountInformation;
 import model.FreshCategory;
 import model.Menu;
 import model.Promotion;
@@ -48,4 +50,10 @@ public interface ICommodityManager {
 
 	public void deleteRecommendedCommodity(Recommended recommended)throws BaseException;
 
+	
+	public List<DiscountCommodity> loadDiscountCommodity(DiscountInformation discountInformation)throws BaseException;
+	
+	public DiscountInformation creatDiscountInformation(String discount_content,int discount_number,float discount_sum, String discount_start_time,String discount_end_time) throws BaseException;
+	
+	public List<DiscountInformation> loadDiscountInformation()throws BaseException;
 }

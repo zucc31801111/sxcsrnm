@@ -33,6 +33,7 @@ public class FrmMenu extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JMenuBar menubar=new JMenuBar(); ;
     private JMenu menu_Manager=new JMenu("菜谱管理");
+    private JMenuItem  menuItem_Flash=new JMenuItem("刷新");
     private JMenuItem  menuItem_MenuAdd=new JMenuItem("添加菜谱");
     private JMenuItem  menuItem_MenuDelete=new JMenuItem("删除菜谱");
     private JMenuItem  menuItem_MenuCommodityAdd=new JMenuItem("添加菜谱商品");
@@ -115,6 +116,9 @@ public class FrmMenu extends JFrame implements ActionListener{
 			menuItem_MenuAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Manager.add(menuItem_MenuAdd);
 		    menuItem_MenuAdd.addActionListener(this);
+		    menuItem_Flash.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Manager.add(menuItem_Flash);
+		    menuItem_Flash.addActionListener(this);
 		    menuItem_MenuDelete.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Manager.add(menuItem_MenuDelete);
 		    menuItem_MenuDelete.addActionListener(this);
@@ -152,6 +156,10 @@ public class FrmMenu extends JFrame implements ActionListener{
 			FrmMenuAdd dlg=new FrmMenuAdd();
 			dlg.setVisible(true);
 
+		}
+		else if(e.getSource()==this.menuItem_Flash) {
+			this.reloadMenuTable();
+			this.reloadRecommendedTabel(0);
 		}
 		else if(e.getSource()==this.menuItem_MenuDelete) {
 			if(this.curMenu==null) {

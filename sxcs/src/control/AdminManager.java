@@ -25,7 +25,7 @@ public class AdminManager implements IAdminManager{
 	@Override
 public void addCoupon( String coupon_content , float coupon_pricedel, float coupon_price, String coupon_start_time,String coupon_end_time) throws BaseException{
 		Connection conn=null;
-		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		if(coupon_pricedel<=0||coupon_price<=0) {
 			throw new BusinessException("价格应大于0");
@@ -46,8 +46,8 @@ public void addCoupon( String coupon_content , float coupon_pricedel, float coup
 			 pst.setString(1,coupon_content);
 			 pst.setFloat(2,coupon_price);
 			 pst.setFloat(3,coupon_pricedel);
-			 pst.setDate(4,new java.sql.Date(timeone.getTime()));
-			 pst.setDate(5,new java.sql.Date(timetwo.getTime()));
+			 pst.setTimestamp(4,new java.sql.Timestamp(timeone.getTime()));
+			 pst.setTimestamp(5,new java.sql.Timestamp(timetwo.getTime()));
 			 pst.execute();
 			 pst.close();
 		} catch (SQLException | ParseException ex) {
@@ -107,8 +107,8 @@ public void addCoupon( String coupon_content , float coupon_pricedel, float coup
 			 p.setCoupon_content(rs.getString(2));
 			 p.setCoupon_price(rs.getFloat(3));
 			 p.setCoupon_pricedel(rs.getFloat(4));
-			 p.setCoupon_start_time(rs.getDate(5));
-			 p.setCoupon_end_time(rs.getDate(6));
+			 p.setCoupon_start_time(rs.getTimestamp(5));
+			 p.setCoupon_end_time(rs.getTimestamp(6));
 			 result.add(p);
 		 }
 		} catch (SQLException ex) {

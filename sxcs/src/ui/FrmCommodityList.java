@@ -34,6 +34,7 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 	private JMenu menu_Commodity=new JMenu("商品管理");
 	private JMenu menu_Shopcar=new JMenu("购物车");
 	
+	private JMenuItem  menuItem_Flash=new JMenuItem("刷新");
 	private JMenuItem  menuItem_CommodityAdd=new JMenuItem("添加商品至购物车");
 	private JMenuItem  menuItem_ShopcarLook=new JMenuItem("查看购物车");
 	/**
@@ -111,6 +112,9 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 			this.setTitle("商品列表");
 			
 			menu_Commodity.setFont(new Font("宋体", Font.PLAIN, 15));
+			menuItem_Flash.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Commodity.add(this.menuItem_Flash);
+		    menuItem_Flash.addActionListener(this);
 			menuItem_CommodityAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Commodity.add(this.menuItem_CommodityAdd);
 		    menuItem_CommodityAdd.addActionListener(this);
@@ -163,6 +167,13 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 			FrmShopcar dlg=new FrmShopcar();
 			dlg.setVisible(true);
 		}
-	}
+		else if(e.getSource()==this.menuItem_Flash) {
+			
+			 this.reloadFreshCategoryTable();
+			
+		}
+
+		
 
 }
+	}

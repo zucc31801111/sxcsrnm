@@ -33,6 +33,8 @@ public class FrmAddress extends JFrame implements ActionListener{
 	private JMenuBar menubar=new JMenuBar(); ;
     private JMenu menu_Manager=new JMenu("地址管理");
     
+    
+    private JMenuItem  menuItem_AddressFlash=new JMenuItem("刷新");
     private JMenuItem  menuItem_AddressAdd=new JMenuItem("增添地址");
     private JMenuItem  menuItem_AddressChange=new JMenuItem("修改地址");
     private JMenuItem  menuItem_AddressDelete=new JMenuItem("删除地址");
@@ -83,6 +85,9 @@ public class FrmAddress extends JFrame implements ActionListener{
 			this.setTitle("地址管理系统");
 		
 			menu_Manager.setFont(new Font("新宋体", Font.PLAIN, 15));
+			menuItem_AddressFlash.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_Manager.add(menuItem_AddressFlash);
+		    menuItem_AddressFlash.addActionListener(this);
 			menuItem_AddressAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 		    menu_Manager.add(menuItem_AddressAdd);
 		    menuItem_AddressAdd.addActionListener(this);		    
@@ -113,6 +118,10 @@ public class FrmAddress extends JFrame implements ActionListener{
 		    this.setVisible(true);
 	}
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==this.menuItem_AddressFlash){
+			this.reloadAddressTable();
+
+		}
 		if(e.getSource()==this.menuItem_AddressAdd){
 			FrmAddressAdd dlg=new FrmAddressAdd();
 			dlg.setVisible(true);

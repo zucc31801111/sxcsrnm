@@ -31,7 +31,7 @@ public class FrmCoupon extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JMenuBar menubar=new JMenuBar(); ;
     private JMenu menu_CouponManager=new JMenu("优惠券管理");
-    
+    private JMenuItem  menuItem_Flash=new JMenuItem("刷新");
     private JMenuItem  menuItem_CouponAdd=new JMenuItem("增添优惠券");
     private JMenuItem  menuItem_CouponDelete=new JMenuItem("删除优惠券");
     
@@ -80,6 +80,9 @@ private void reloadCouponTable(){
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 			this.setTitle("优惠券系统");
 			menu_CouponManager.setFont(new Font("新宋体", Font.PLAIN, 15));
+			menuItem_Flash.setFont(new Font("宋体", Font.PLAIN, 15));
+		    menu_CouponManager.add(menuItem_Flash);
+		    menuItem_Flash.addActionListener(this);
 			menuItem_CouponAdd.setFont(new Font("宋体", Font.PLAIN, 15));
 			menu_CouponManager.add(menuItem_CouponAdd);
 			menuItem_CouponAdd.addActionListener(this);		    
@@ -105,7 +108,11 @@ private void reloadCouponTable(){
 		    this.setVisible(true);
 	}
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==this.menuItem_CouponAdd){
+		if(e.getSource()==this.menuItem_Flash){
+			this.reloadCouponTable();
+
+		}
+		else if(e.getSource()==this.menuItem_CouponAdd){
 			FrmCouponAdd dlg=new FrmCouponAdd();
 			dlg.setVisible(true);
 

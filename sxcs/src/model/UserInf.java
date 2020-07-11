@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -13,9 +14,9 @@ public class UserInf {
 	private String user_phone;
 	private String user_mail;
 	private String user_city;
-	private Date user_registration_time;
+	private Timestamp user_registration_time;
 	private Boolean user_vip;
-	private Date user_vip_end_time;
+	private Timestamp user_vip_end_time;
 	public String getUser_id() {
 		return user_id;
 	}
@@ -58,10 +59,10 @@ public class UserInf {
 	public void setUser_city(String user_city) {
 		this.user_city = user_city;
 	}
-	public Date getUser_registration_time() {
+	public Timestamp getUser_registration_time() {
 		return user_registration_time;
 	}
-	public void setUser_registration_time(Date user_registration_time) {
+	public void setUser_registration_time(Timestamp user_registration_time) {
 		this.user_registration_time = user_registration_time;
 	}
 	public Boolean getUser_vip() {
@@ -70,10 +71,10 @@ public class UserInf {
 	public void setUser_vip(Boolean user_vip) {
 		this.user_vip = user_vip;
 	}
-	public Date getUser_vip_end_time() {
+	public Timestamp getUser_vip_end_time() {
 		return user_vip_end_time;
 	}
-	public void setUser_vip_end_time(Date user_vip_end_time) {
+	public void setUser_vip_end_time(Timestamp user_vip_end_time) {
 		this.user_vip_end_time = user_vip_end_time;
 	}
 	

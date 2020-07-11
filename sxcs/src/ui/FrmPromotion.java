@@ -36,12 +36,11 @@ public class FrmPromotion extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JMenuBar promotionbar=new JMenuBar(); 
     private JMenu promotion_Manager=new JMenu("促销管理");
-    private JMenu promotion_ESC=new JMenu("退出促销系统");
-    
+    private JMenuItem  promotionItem_Flash=new JMenuItem("刷新");
     private JMenuItem  promotionItem_Add =new JMenuItem("增加促销商品");
     private JMenuItem  promotionItem_Delete =new JMenuItem("删除促销商品");
     
-    private JMenuItem  promotionItem_ESC =new JMenuItem("退出");
+
 	/**
 	 * Launch the application.
 	 */
@@ -95,6 +94,10 @@ public class FrmPromotion extends JFrame implements ActionListener{
 			this.setTitle("限时促销系统");
  
 			promotion_Manager.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
+			
+			promotionItem_Flash.setFont(new Font("宋体", Font.PLAIN, 15));
+		    promotion_Manager.add(this.promotionItem_Flash);
+		    promotionItem_Flash.addActionListener(this);
 			promotionItem_Add.setFont(new Font("宋体", Font.PLAIN, 15));
 		    promotion_Manager.add(this.promotionItem_Add);
 		    promotionItem_Add.addActionListener(this);
@@ -103,11 +106,7 @@ public class FrmPromotion extends JFrame implements ActionListener{
 		    promotionItem_Delete.addActionListener(this);
 		    promotionbar.add(promotion_Manager);	
 		    
-		    promotion_ESC.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 15));
-			promotionItem_ESC.setFont(new Font("宋体", Font.PLAIN, 15));
-			promotion_ESC.add(this.promotionItem_ESC);
-			promotionItem_ESC.addActionListener(this);
-			promotionbar.add(promotion_ESC);
+		    
 		    this.setJMenuBar(promotionbar);
 		    
 		    FrmPromotion.this.reloadPromotionTable();
@@ -150,9 +149,8 @@ public class FrmPromotion extends JFrame implements ActionListener{
 			}
 			
 		}
-       else if(e.getSource()==this.promotionItem_ESC) { 
-    	   this.setVisible(false);
-    	   return;
+       else if(e.getSource()==this.promotionItem_Flash) { 
+    	   this.reloadPromotionTable();
 	
 		}
 		

@@ -2,7 +2,7 @@ package model;
 
 
 public class CommodityInformation {
-	public static final String[] tblCommodityTitle={"序号","名称","价格","vip价格","数量","规格","描述"};
+	public static final String[] tblCommodityTitle={"序号","名称","价格","vip价格","数量","规格","描述","销量"};
 	public String getCell(int col){
 		if(col==0) return ""+this.getCommodity_id();
 		else if(col==1) return ""+this.getCommodity_name();
@@ -11,18 +11,26 @@ public class CommodityInformation {
 		else if(col==4) return ""+this.getCommodity_number();
 		else if(col==5) return ""+this.getCommodity_specifications();
 		else if(col==6) return ""+this.getCommodity_describe();
+		else if(col==7) return ""+this.getCommodity_salecount();
 		else return "";
 	}
 	//public static CommodityInformation currentLoginUser=null;
 	  private int commodity_id;
 	  private String commodity_name;
-	  private float commodity_price;
-	  private float commodity_vip_price;
+	  private double commodity_price;
+	  private double commodity_vip_price;
 	  private int commodity_number;
 	  private String commodity_specifications;
 	  private String commodity_describe;
 	  private int commodity_category_id;
-	  public int getCommodity_id() {
+	  private int commodity_salecount;
+	  public int getCommodity_salecount() {
+		return commodity_salecount;
+	}
+	public void setCommodity_salecount(int commodity_salecount) {
+		this.commodity_salecount = commodity_salecount;
+	}
+	public int getCommodity_id() {
 		return commodity_id;
 	}
 	public void setCommodity_id(int commodity_id) {
@@ -34,16 +42,16 @@ public class CommodityInformation {
 	public void setCommodity_name(String commodity_name) {
 		this.commodity_name = commodity_name;
 	}
-	public float getCommodity_price() {
+	public double getCommodity_price() {
 		return commodity_price;
 	}
-	public void setCommodity_price(float commodity_price) {
+	public void setCommodity_price(double commodity_price) {
 		this.commodity_price = commodity_price;
 	}
-	public float getCommodity_vip_price() {
+	public double getCommodity_vip_price() {
 		return commodity_vip_price;
 	}
-	public void setCommodity_vip_price(float commodity_vip_price) {
+	public void setCommodity_vip_price(double commodity_vip_price) {
 		this.commodity_vip_price = commodity_vip_price;
 	}
 	public int getCommodity_number() {

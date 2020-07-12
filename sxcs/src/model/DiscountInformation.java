@@ -20,7 +20,7 @@ public class DiscountInformation {
 	private int discount_id;
 	private String discount_content;
 	private int discount_number;
-	private float discount_sum;
+	private double discount_sum;
 	private Timestamp discount_start_time;
 	private Timestamp discount_end_time;
 	public int getDiscount_id() {
@@ -41,10 +41,10 @@ public class DiscountInformation {
 	public void setDiscount_number(int discount_number) {
 		this.discount_number = discount_number;
 	}
-	public float getDiscount_sum() {
+	public double getDiscount_sum() {
 		return discount_sum;
 	}
-	public void setDiscount_sum(float discount_sum) {
+	public void setDiscount_sum(double discount_sum) {
 		this.discount_sum = discount_sum;
 	}
 	public Timestamp getDiscount_start_time() {

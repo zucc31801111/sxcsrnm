@@ -15,7 +15,7 @@ public class UserInf {
 	private String user_mail;
 	private String user_city;
 	private Timestamp user_registration_time;
-	private Boolean user_vip;
+	private int user_vip;
 	private Timestamp user_vip_end_time;
 	public String getUser_id() {
 		return user_id;
@@ -65,10 +65,10 @@ public class UserInf {
 	public void setUser_registration_time(Timestamp user_registration_time) {
 		this.user_registration_time = user_registration_time;
 	}
-	public Boolean getUser_vip() {
+	public int getUser_vip() {
 		return user_vip;
 	}
-	public void setUser_vip(Boolean user_vip) {
+	public void setUser_vip(int user_vip) {
 		this.user_vip = user_vip;
 	}
 	public Timestamp getUser_vip_end_time() {

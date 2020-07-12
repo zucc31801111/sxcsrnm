@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -30,6 +32,9 @@ import util.BaseException;
 public class FrmShopcar extends JFrame implements ActionListener{
 	
 	private static final long serialVersionUID = 1L;
+	
+	private JPanel statusBar = new JPanel();
+	private JLabel label2=new JLabel("合计");
 	private JMenuBar shopcarbar=new JMenuBar(); 
     private JMenu shopcar_Manager=new JMenu("商品管理");
     private JMenu shopcar_Settle=new JMenu("商品结算");
@@ -52,7 +57,7 @@ public class FrmShopcar extends JFrame implements ActionListener{
 	DefaultTableModel tabAddressModel=new DefaultTableModel();
 	private JTable dataTableAddress=new JTable(tabAddressModel);
 	
-    private Object tblCouponTitle[]=Coupon.tblCouponTitle;
+   private Object tblCouponTitle[]=Coupon.tblCouponTitle;
 	private Object tblCouponData[][];
 	DefaultTableModel tabCouponModel=new DefaultTableModel();
 	private JTable dataTableCoupon=new JTable(tabCouponModel);
@@ -127,9 +132,7 @@ private void reloadCouponTable(){
 	this.dataTableCoupon.repaint();
 }
 
-	/**
-	 * Create the frame.
-	 */
+	
 	public FrmShopcar() {
 		setFont(new Font("Dialog", Font.PLAIN, 30));
 		setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -174,6 +177,27 @@ private void reloadCouponTable(){
 		    	
 		    });
 		    
+		    
+		    this.dataTableAddress.addMouseListener(new MouseAdapter (){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					int i=FrmShopcar.this.dataTableAddress.getSelectedRow();
+					if(i<0) {
+						return;
+					}		
+				}
+		    	
+		    });
+		    
+		    
+		    
+		    
+		    statusBar.setLayout(new FlowLayout(FlowLayout.LEFT));
+		    JLabel label=new JLabel("您好!");//修改成   您好！+登陆用户名
+		    statusBar.add(label);
+		    this.getContentPane().add(statusBar,BorderLayout.SOUTH);
+		    
 		    this.setVisible(true);
 	}
 	@Override
@@ -205,10 +229,18 @@ private void reloadCouponTable(){
       else if(e.getSource()==this.shopcarItem_Flash) {
 	   FrmShopcar.this.reloadShopcarTable();
 	   FrmShopcar.this.reloadAddressTable();
-	   FrmShopcar.this.reloadCouponTable();
+	 //  FrmShopcar.this.reloadCouponTable();
 		}
 		else if(e.getSource()==this.shopcarItem_Settle) {
-			
+			int i=FrmShopcar.this.dataTableAddress.getSelectedRow();
+			if(i<0) {
+				JOptionPane.showMessageDialog(null, "请选择地址", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			FrmSetTime dlg=new FrmSetTime();
+			dlg.address=this.allAddress.get(i);
+			dlg.shopcar=this.allShopcar;
+			dlg.setVisible(true);
 		}
 		
 	}

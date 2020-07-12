@@ -125,12 +125,12 @@ public class FrmCouponAdd extends JFrame implements ActionListener{
 			String coupon_end_time=null;
 			String coupon_start_time=null;
 			 String coupon_content=null;
-		float coupon_pricedel=0;
-		float coupon_price=0;
+		double coupon_pricedel=0;
+		double coupon_price=0;
 		try {
 			     coupon_content=this.textField.getText();
-				coupon_pricedel=(float) Double.parseDouble(this.textField_1.getText());
-		        coupon_price=(float) Double.parseDouble(this.textField_2.getText());
+				coupon_price= Double.parseDouble(this.textField_1.getText());
+		        coupon_pricedel= Double.parseDouble(this.textField_2.getText());
 		        coupon_start_time=this.textField_3.getText();
 		         coupon_end_time=this.textField_4.getText();
 		}catch (NumberFormatException e1) {
@@ -139,7 +139,7 @@ public class FrmCouponAdd extends JFrame implements ActionListener{
 		}
 		
 		try {
-			SXCSUtil.adminManager.addCoupon(coupon_content, coupon_pricedel, coupon_price, coupon_start_time, coupon_end_time);;
+			SXCSUtil.adminManager.addCoupon(coupon_content,coupon_price,  coupon_pricedel, coupon_start_time, coupon_end_time);;
 			this.setVisible(false);
 	} catch (BaseException e1) {
 		JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);

@@ -124,14 +124,14 @@ public void actionPerformed(ActionEvent e) {
 		
 		 int commodityid=0;
 		 int sum=0;
-		 float price=0;
+		 double price=0;
 		 String starttime=null;
 		 String endtime=null;
 		 starttime=this.textstarttime.getText();
 		 endtime=this.textendtime.getText();
 		try {
 	     commodityid=Integer.parseInt(this.textid.getText());
-		 price=(float) Double.parseDouble(this.textprice.getText());
+		 price= Double.parseDouble(this.textprice.getText());
 		 sum=Integer.parseInt(this.textsum.getText());
 	
 		}

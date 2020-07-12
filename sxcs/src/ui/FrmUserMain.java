@@ -127,7 +127,8 @@ public class FrmUserMain extends JFrame implements ActionListener{
 			dlg.setVisible(true);
 		}
 		else if(e.getSource() == this.menuItem_CommodityOrder) {
-			
+			FrmOrderUser dlg=new FrmOrderUser();
+			dlg.setVisible(true);
 		}
        else if(e.getSource() == this.menuItem_Commodity) {
     	   FrmCommodityList dlg=new FrmCommodityList();
@@ -138,8 +139,8 @@ public class FrmUserMain extends JFrame implements ActionListener{
     	   dlg.setVisible(true);
 		}
        else if(e.getSource() == this.menuItem_CommodityDiscount) {
-    	  // FrmCommodityList dlg=new FrmCommodityList();
-    	 //  dlg.setVisible(true);
+    	   FrmCommodityDiscountUser dlg=new FrmCommodityDiscountUser();
+    	    dlg.setVisible(true);
 		}
       else if(e.getSource() == this.menuItem_Menu) {
     	  FrmUserMenu dlg=new FrmUserMenu();

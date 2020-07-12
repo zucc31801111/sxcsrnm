@@ -106,6 +106,7 @@ public class FrmCategoryAdd extends JFrame implements ActionListener{
 			String categoryDescribe =this.textDescribe.getText();
 			try {
 				SXCSUtil.commodityManager.addCategory(categoryName, categoryDescribe);
+				this.setVisible(false);
 			} catch (BaseException e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
 				return;

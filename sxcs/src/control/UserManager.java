@@ -1,13 +1,22 @@
 package control;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+
 import itl.IUserManager;
 import model.CommodityInformation;
+import model.CommodityOrder;
 import model.DeliveryAddressList;
 import model.FreshCategory;
+import model.Menu;
+import model.OrderContent;
 import model.Promotion;
 import model.Recommended;
 import model.UserInf;
@@ -18,6 +27,350 @@ import util.DBUtil;
 import util.DbException;
 
 public class UserManager implements IUserManager{
+	
+	
+	@Override
+	public void  jiesuan(List<UserShopcar> shopcar,String arrivetime,DeliveryAddressList address)throws BaseException{
+		if(arrivetime.equals(null)||arrivetime==null) {
+			throw new BusinessException("时间不能为空");
+		}
+		double sumPrice=0;
+		double youhiPrice=0;
+		int flag3=0;
+		int coupon_id=0;
+		Connection conn=null;
+		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			
+				conn=DBUtil.getConnection();
+				Date gettime=time.parse(arrivetime);
+				int order=0;
+				String sql="select max(order_id) from commodity_order ";
+				java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			    java.sql.ResultSet rs=pst.executeQuery();
+				
+			 if(!rs.next()) {
+				 order=1;
+			 } 
+			 else {
+				 order =rs.getInt(1)+1;
+			 }
+				 sql="insert into commodity_order(order_id,order_user_id,order_begin_price,order_end_price,order_gettime,order_delivery_id,order_state) "
+						+ "values(?,?,0,0,?,?,?)";
+				pst=conn.prepareStatement(sql);
+				pst.setInt(1, order);
+                pst.setString(2, UserInf.currentLoginUser.getUser_id());
+                pst.setTimestamp(3,new java.sql.Timestamp(gettime.getTime()));
+				pst.setInt(4, address.getDelivery_id());
+				pst.setString(5,"已下单");
+				pst.execute();
+				pst.close();	 
+				
+		for(int i=0;i<shopcar.size();i++) {
+			int discountId=0;
+			int dicountNumber=0;
+			double discountSum=0;
+			double promotionPrice=0;
+			int promotionSum=0;
+			int flag1=0;
+			int flag2=0;
+			
+			UserShopcar s=(UserShopcar)shopcar.get(i);
+			//计算初始价格
+			sumPrice=sumPrice+s.getShopcar_commodity_price()*s.getShopcar_commodity_sum();
+			//判断满折条件，时间
+			 sql="select list_discount_id,list_discount_start_time,list_discount_end_time from discount_commodity where list_commodity_id= ? ";
+			 pst=conn.prepareStatement(sql);
+			pst.setInt(1,s.getShopcar_commodity_id());
+			 rs=pst.executeQuery();
+			if(rs.next()) {
+			if( rs.getInt(1)>0&&rs.getTimestamp(2).before(new java.sql.Timestamp(System.currentTimeMillis()))&&new java.sql.Timestamp(System.currentTimeMillis()).before(rs.getTimestamp(3)))
+			 {  
+				flag1=1;
+				discountId=rs.getInt(1);
+				rs.close();
+				pst.close();
+				//从满折信息表中读出数量，折扣
+				sql="select discount_number, discount_sum from discount_information where discount_id= ? ";
+			    pst=conn.prepareStatement(sql);
+				pst.setInt(1,discountId);
+				rs=pst.executeQuery();
+				rs.next();
+				dicountNumber=rs.getInt(1);
+				discountSum=rs.getDouble(2);
+				rs.close();
+				pst.close();
+				
+			}
+			}
+			rs.close();
+			pst.close();
+			//判断限时促销条件，时间
+			sql="select promotion_price, promotion_sum, promotion_start_time, promotion_end_time from promotion where promotion_commodity_id= ? ";
+		    pst=conn.prepareStatement(sql);
+		    pst.setInt(1,s.getShopcar_commodity_id());
+			rs=pst.executeQuery();
+			if(rs.next()) {
+				if(rs.getTimestamp(3).before(new java.sql.Timestamp(System.currentTimeMillis()))&&new java.sql.Timestamp(System.currentTimeMillis()).before(rs.getTimestamp(4))) {
+				flag2=1;
+				promotionPrice=rs.getDouble(1);
+				promotionSum=rs.getInt(2);
+				rs.close();
+				pst.close();
+				
+			}
+			}
+			rs.close();
+			pst.close();
+			if(flag1==1) {
+				if(s.getShopcar_commodity_sum()>=dicountNumber) {
+					sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price,content_discount_sum,content_discount_id)values(?,?,?,?,?,?)";
+				    pst=conn.prepareStatement(sql);
+				    pst.setInt(1,order);
+				    pst.setInt(2, s.getShopcar_commodity_id());
+				    pst.setInt(3, s.getShopcar_commodity_sum());
+				    pst.setDouble(4, s.getShopcar_commodity_price());
+				    pst.setDouble(5,discountSum);
+				    pst.setInt(6, discountId);
+				    pst.execute();
+				    pst.close();
+		
+				    youhiPrice=youhiPrice+0.1*s.getShopcar_commodity_sum()*s.getShopcar_commodity_price()*discountSum;
+				    
+				    }
+				else {
+					sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
+				    pst=conn.prepareStatement(sql);
+				    pst.setInt(1,order);
+				    pst.setInt(2, s.getShopcar_commodity_id());
+				    pst.setInt(3, s.getShopcar_commodity_sum());
+				    pst.setDouble(4, s.getShopcar_commodity_price());
+				    pst.execute();
+				    pst.close();
+				    youhiPrice=youhiPrice+s.getShopcar_commodity_sum()*s.getShopcar_commodity_price();
+				}
+				
+			}
+			else if(flag2==1){
+				if(s.getShopcar_commodity_sum()<=promotionSum) {
+				sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
+			    pst=conn.prepareStatement(sql);
+			    pst.setInt(1,order);
+			    pst.setInt(2, s.getShopcar_commodity_id());
+			    pst.setInt(3, s.getShopcar_commodity_sum());
+			    pst.setDouble(4, promotionPrice);
+			    pst.execute();
+			    pst.close();	
+			    
+			    //修改限时促销表
+			    sql="update promotion set promotion_sum = promotion_sum -? where promotion_commodity_id =?";
+			    pst=conn.prepareStatement(sql);
+			    pst.setInt(1,s.getShopcar_commodity_sum());
+			    pst.setInt(2,s.getShopcar_commodity_id());
+			    pst.execute();
+			    pst.close();
+			    
+			    youhiPrice=youhiPrice+s.getShopcar_commodity_sum()*promotionPrice;
+				}
+				
+			    else {
+			    	sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
+				    pst=conn.prepareStatement(sql);
+				    pst.setInt(1,order);
+				    pst.setInt(2, s.getShopcar_commodity_id());
+				    pst.setInt(3,promotionSum);
+				    pst.setDouble(4, promotionPrice);
+				    pst.execute();
+				    pst.close();
+				    sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
+				    pst=conn.prepareStatement(sql);
+				    pst.setInt(1,order);
+				    pst.setInt(2, s.getShopcar_commodity_id());
+				    pst.setInt(3,s.getShopcar_commodity_sum()-promotionSum);
+				    pst.setDouble(4, s.getShopcar_commodity_price());
+				    pst.execute();
+				    pst.close();
+				    
+			         //修改限时促销表 
+				    sql="delete from promotion where promotion_commodity_id =?";
+				    pst=conn.prepareStatement(sql);
+				    pst.setInt(1,s.getShopcar_commodity_id());
+				    pst.execute();
+				    pst.close();
+				    youhiPrice=youhiPrice+(s.getShopcar_commodity_sum()-promotionSum)*s.getShopcar_commodity_price()+promotionSum*promotionPrice;
+				    
+			    }
+				
+				
+			}
+			else {
+				sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
+			    pst=conn.prepareStatement(sql);
+			    pst.setInt(1,order);
+			    pst.setInt(2, s.getShopcar_commodity_id());
+			    pst.setInt(3, s.getShopcar_commodity_sum());
+			    pst.setDouble(4, s.getShopcar_commodity_price());
+			    pst.execute();
+			    pst.close();
+			    
+			    youhiPrice=youhiPrice+s.getShopcar_commodity_id()* s.getShopcar_commodity_sum();
+			}
+			//更新商品数量
+			sql="update commodity_information set commodity_number=commodity_number - ?,commodity_salecount= commodity_salecount + ? where commodity_id=?";
+			pst=conn.prepareStatement(sql);
+			pst.setInt(1, s.getShopcar_commodity_sum());
+			pst.setInt(2, s.getShopcar_commodity_sum());
+			pst.setInt(3, s.getShopcar_commodity_id());
+			pst.execute();
+			pst.close();	
+					
+		}
+		//选择最优优惠券
+		sql="select coupon_id,coupon_pricedel,coupon_start_time,coupon_end_time from coupon where coupon_price<= ? order by coupon_pricedel desc";
+		pst=conn.prepareStatement(sql);
+		pst.setDouble(1, youhiPrice);
+		rs=pst.executeQuery();
+		while(rs.next()&&flag3==0) {
+			if(rs.getTimestamp(3).before(new java.sql.Timestamp(System.currentTimeMillis()))&&new java.sql.Timestamp(System.currentTimeMillis()).before(rs.getTimestamp(4))) {
+				flag3=1;
+				coupon_id=rs.getInt(1);
+				youhiPrice=youhiPrice-rs.getDouble(2);
+				
+			}
+				
+			}
+		rs.close();
+		pst.close();
+		
+		//更新商品订单
+		if(flag3==1) {
+			sql="update commodity_order set order_begin_price= ?,order_end_price= ? ,order_coupon_id= ? where order_id=?";
+			pst=conn.prepareStatement(sql);
+			pst.setDouble(1, sumPrice);
+			pst.setDouble(2, youhiPrice);
+			pst.setInt(3, coupon_id);
+			pst.setInt(4, order);
+			pst.execute();
+			pst.close();
+		}
+		
+		
+		
+		else {
+		sql="update commodity_order set order_begin_price= ?,order_end_price= ? where order_id=?";
+	    pst=conn.prepareStatement(sql);
+		pst.setDouble(1, sumPrice);
+		pst.setDouble(2, youhiPrice);
+		pst.setInt(3, order);
+		pst.execute();
+		pst.close();	
+			
+		}
+		
+		//更新
+		sql="delete from user_shopcar where shopcar_user_id=?";
+		pst=conn.prepareStatement(sql);
+		pst.setString(1, UserInf.currentLoginUser.getUser_id());
+		pst.execute();
+		pst.close();
+	
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		
+	}
+	
+	@Override
+	public List<CommodityOrder> loadCommodityOrderUser()throws BaseException{
+		List<CommodityOrder> result=new ArrayList<CommodityOrder>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select order_id,order_begin_price,order_end_price,order_gettime,order_delivery_id, order_state,order_coupon_id "
+					+ "from commodity_order where order_user_id = ?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setString(1,UserInf.currentLoginUser.getUser_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 CommodityOrder p =new CommodityOrder();
+			 p.setOrder_id(rs.getInt(1));
+			 p.setOrder_begin_price(rs.getDouble(2));
+			 p.setOrder_end_price(rs.getDouble(3));
+			 p.setOrder_gettime(rs.getTimestamp(4));
+			 p.setOrder_delivery_id(rs.getInt(5));
+			 p.setOrder_state(rs.getString(6));
+			 p.setOrder_coupon_id(rs.getInt(7));	
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+	}
+	@Override
+	public List<OrderContent> loadCommodityOrderContent(CommodityOrder commodityOrder)throws BaseException{
+		List<OrderContent> result=new ArrayList<OrderContent>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select content_commodity_id,order_number,order_price,content_discount_sum,content_discount_id "
+					+ "from order_content where content_order_id = ?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,commodityOrder.getOrder_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 OrderContent p =new OrderContent();
+			 
+			 p.setContent_commodity_id(rs.getInt(1));
+			 p.setOrder_number(rs.getInt(2));
+			 p.setOrder_price(rs.getDouble(3));
+			 p.setContent_discount_sum(rs.getDouble(4));
+			 p.setContent_discount_id(rs.getInt(5));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+	}
+	
+	
 	@Override
 	public UserShopcar addUserShopcartwo(int sum,Recommended recommended)throws BaseException{
 		if(sum<0 ){
@@ -28,8 +381,8 @@ public class UserManager implements IUserManager{
 		Connection conn=null;
 		try {
 			conn=DBUtil.getConnection();
-			String sql="select commodity_id,commodity_name,commodity_price,commodity_vip_price,commodity_number,commodity_specifications,commodity_describe,commodity_category_id from commodity_information "
-					+ "where commodity_name = ? ";
+			String sql="select commodity_id,commodity_name,commodity_price,commodity_vip_price,commodity_number,commodity_specifications,commodity_describe,commodity_category_id "
+					+ "from commodity_information where commodity_name = ? ";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setString(1,recommended.getrec_commodity_name());
 			java.sql.ResultSet rs=pst.executeQuery();
@@ -37,8 +390,8 @@ public class UserManager implements IUserManager{
 			 CommodityInformation commodity1 =new CommodityInformation();
 			 commodity1.setCommodity_id(rs.getInt(1));
 			 commodity1.setCommodity_name(rs.getString(2));
-			 commodity1.setCommodity_price(rs.getFloat(3));
-			 commodity1.setCommodity_vip_price(rs.getFloat(4));
+			 commodity1.setCommodity_price(rs.getDouble(3));
+			 commodity1.setCommodity_vip_price(rs.getDouble(4));
 			 commodity1.setCommodity_number(rs.getInt(5));
 			 commodity1.setCommodity_specifications(rs.getString(6));
 			 commodity1.setCommodity_describe(rs.getString(7));
@@ -73,17 +426,23 @@ public class UserManager implements IUserManager{
 			
 		}
 		else {
+			double price=0;
+			if(UserInf.currentLoginUser.getUser_vip()==0) {
+				price=commodity1.getCommodity_price();
+			}
+			else {
+				price=commodity1.getCommodity_vip_price();
+			}
 			rs.close();
 			pst.close();
-			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice) "
-					+ "values(?,?,?,?,?,?)";
+			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price) "
+					+ "values(?,?,?,?,?)";
 		    pst=conn.prepareStatement(sql);
 			pst.setString(1, UserInf.currentLoginUser.getUser_id());
 			pst.setInt(2, commodity1.getCommodity_id());
 			pst.setString(3, commodity1.getCommodity_name());
 			pst.setInt(4, allsum);
-			pst.setFloat(5,commodity1.getCommodity_price());
-			pst.setFloat(6, commodity1.getCommodity_vip_price());
+			pst.setDouble(5,price);
 			pst.execute();
 			pst.close();
 			
@@ -212,15 +571,19 @@ public class UserManager implements IUserManager{
 		else {
 			rs.close();
 			pst.close();
-			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice) "
-					+ "values(?,?,?,?,?,?)";
+			sql="insert into user_shopcar(shopcar_user_id,shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price) "
+					+ "values(?,?,?,?,?)";
 		    pst=conn.prepareStatement(sql);
 			pst.setString(1, UserInf.currentLoginUser.getUser_id());
 			pst.setInt(2, commodity.getCommodity_id());
 			pst.setString(3, commodity.getCommodity_name());
 			pst.setInt(4, allsum);
-			pst.setFloat(5,commodity.getCommodity_price());
-			pst.setFloat(6, commodity.getCommodity_vip_price());
+			if(UserInf.currentLoginUser.getUser_vip()==1) {
+			pst.setDouble(5, commodity.getCommodity_vip_price());	
+			}
+			else {
+			pst.setDouble(5, commodity.getCommodity_price());
+			}
 			pst.execute();
 			pst.close();
 			
@@ -247,7 +610,7 @@ public class UserManager implements IUserManager{
 		Connection conn=null;
 		try {
 			conn=DBUtil.getConnection();
-			String sql="select shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price,shopcar_commodity_vipprice"
+			String sql="select shopcar_commodity_id,shopcar_commodity_name,shopcar_commodity_sum,shopcar_commodity_price"
 					+ " from user_shopcar where shopcar_user_id = ? order by shopcar_commodity_id";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setString(1,UserInf.currentLoginUser.getUser_id());
@@ -257,8 +620,8 @@ public class UserManager implements IUserManager{
 			 p.setShopcar_commodity_id(rs.getInt(1));
 			 p.setShopcar_commodity_name(rs.getString(2));
 			 p.setShopcar_commodity_sum(rs.getInt(3));
-			 p.setShopcar_commodity_price(rs.getFloat(4));
-			 p.setShopcar_commodity_vipprice(rs.getFloat(5));
+			 p.setShopcar_commodity_price(rs.getDouble(4));
+	
 			 result.add(p);
 		 }
 		} catch (SQLException ex) {
@@ -290,14 +653,21 @@ public class UserManager implements IUserManager{
 		Connection conn=null;
 		try {
 			conn=DBUtil.getConnection();
-			String sql="select user_id,user_pwd from user_inf where user_id=?";
+			String sql="select user_id,user_pwd,user_vip,user_vip_end_time from user_inf where user_id=?";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setString(1,userid);
 			java.sql.ResultSet rs=pst.executeQuery();
 			if(!rs.next()) throw new BaseException("账号不存在");
-			UserInf u=new UserInf();
+			UserInf u =new UserInf();
 			u.setUser_id(rs.getString(1));
 			u.setUser_pwd(rs.getString(2));
+			u.setUser_vip(rs.getInt(3));
+			u.setUser_vip_end_time(rs.getTimestamp(4));
+			/*UserInf.currentLoginUser.setUser_id(rs.getString(1));
+			UserInf.currentLoginUser.setUser_pwd(rs.getString(2));
+			UserInf.currentLoginUser.setUser_vip(rs.getInt(3));
+			UserInf.currentLoginUser.setUser_vip_end_time(rs.getTimestamp(4));*/
+			
 			if(!pwd.equals(u.getUser_pwd())) throw new BaseException("密码不正确");
 			rs.close();
 			pst.close();
@@ -338,7 +708,7 @@ public class UserManager implements IUserManager{
 			u.setUser_mail(rs.getString(6));
 			u.setUser_city(rs.getString(7));
 			u.setUser_registration_time(rs.getTimestamp(8));
-			u.setUser_vip(rs.getBoolean(9));
+			u.setUser_vip(rs.getInt(9));
 			u.setUser_vip_end_time(rs.getTimestamp(10));
 			result.add(u);
 			}
@@ -427,6 +797,7 @@ public class UserManager implements IUserManager{
 		
 		Connection conn=null;
 		try {
+			
 			conn=DBUtil.getConnection();
 			String sql="select * from user_inf where user_id=?";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
@@ -445,7 +816,7 @@ public class UserManager implements IUserManager{
 			pst.setString(6, user.getUser_mail());
 			pst.setString(7, user.getUser_city());
 			pst.setTimestamp(8,new java.sql.Timestamp(System.currentTimeMillis()));
-			pst.setBoolean(9, false);
+			pst.setInt(9, 0);
 			pst.setString(10,null);
 			pst.execute();
 			pst.close();

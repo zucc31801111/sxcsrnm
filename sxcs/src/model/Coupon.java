@@ -17,20 +17,20 @@ public class Coupon {
 	}
 	private int coupon_id;
 	private String coupon_content;
-	private float coupon_price;
-	private float coupon_pricedel;
+	private double coupon_price;
+	private double coupon_pricedel;
 	private Timestamp coupon_start_time;
 	private Timestamp coupon_end_time;
-	public float getCoupon_pricedel() {
+	public double getCoupon_pricedel() {
 		return coupon_pricedel;
 	}
-	public void setCoupon_pricedel(float coupon_pricedel) {
+	public void setCoupon_pricedel(double coupon_pricedel) {
 		this.coupon_pricedel = coupon_pricedel;
 	}
-	public float getCoupon_price() {
+	public double getCoupon_price() {
 		return coupon_price;
 	}
-	public void setCoupon_price(float coupon_price) {
+	public void setCoupon_price(double coupon_price) {
 		this.coupon_price = coupon_price;
 	}
 	

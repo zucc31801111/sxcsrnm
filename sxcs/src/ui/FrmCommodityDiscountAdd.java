@@ -121,12 +121,12 @@ public class FrmCommodityDiscountAdd extends JFrame implements ActionListener {
 			
 			String content=this.textField.getText();
 			 int number=0;
-			 float sum=0;
+			 double sum=0;
 			 String starttime=this.textField_3.getText();
 			 String  endtime=this.textField_4.getText();
 			try {
 				number=Integer.parseInt(this.textField_1.getText());
-				sum=(float) Double.parseDouble(this.textField_2.getText());
+				sum=Double.parseDouble(this.textField_2.getText());
 			}
 			catch (NumberFormatException e1) {
 				JOptionPane.showMessageDialog(null, "数字不能为空", "错误",JOptionPane.ERROR_MESSAGE);

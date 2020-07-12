@@ -20,7 +20,7 @@ public interface ICommodityManager {
 	
 	public List<Promotion> loadPromotion()throws BaseException;
 	
-	public CommodityInformation addCommodity(String commodityName,float commodityPrice,float vipPrice,String commodityspec,String commoditydesc,FreshCategory category)throws BaseException;
+	public CommodityInformation addCommodity(String commodityName,double commodityPrice,double vipPrice,String commodityspec,String commoditydesc,FreshCategory category)throws BaseException;
    
 	public FreshCategory addCategory(String categoryName,String categoryDescribe) throws BaseException;
 	
@@ -28,13 +28,13 @@ public interface ICommodityManager {
 	
 	public void deleteCommodity(CommodityInformation commodity) throws BaseException;
 	
-	public void changeCommodity(String commodityName,float commodityPrice,float vipPrice,String commodityspec,String commoditydesc,CommodityInformation commodity)throws BaseException;
+	public void changeCommodity(String commodityName,double commodityPrice,double vipPrice,String commodityspec,String commoditydesc,CommodityInformation commodity)throws BaseException;
 	
 	public void deleteCategory(FreshCategory category) throws BaseException;
 
 	public void deletePromotion(Promotion promotion) throws BaseException;
 	
-	public void addPromotion(int commodityid, float price , int sum, String starttime, String endtime) throws BaseException;
+	public void addPromotion(int commodityid, double price , int sum, String starttime, String endtime) throws BaseException;
 	
 	public List<CommodityPurchase> loadPurchase()throws BaseException;
 	
@@ -53,7 +53,13 @@ public interface ICommodityManager {
 	
 	public List<DiscountCommodity> loadDiscountCommodity(DiscountInformation discountInformation)throws BaseException;
 	
-	public DiscountInformation creatDiscountInformation(String discount_content,int discount_number,float discount_sum, String discount_start_time,String discount_end_time) throws BaseException;
+	public void addDiscountCommodity(int commodityId,DiscountInformation discountInformation)throws BaseException;
+	
+	public void deleteDiscountCommodity(DiscountCommodity discountCommodity) throws BaseException;
+	
+	public DiscountInformation creatDiscountInformation(String discount_content,int discount_number,double discount_sum, String discount_start_time,String discount_end_time) throws BaseException;
 	
 	public List<DiscountInformation> loadDiscountInformation()throws BaseException;
+	
+	public void deleteDiscountInformation(DiscountInformation curdiscountInformation) throws BaseException;
 }

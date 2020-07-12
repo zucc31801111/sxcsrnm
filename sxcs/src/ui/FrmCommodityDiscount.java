@@ -156,6 +156,44 @@ public class FrmCommodityDiscount extends JFrame implements ActionListener{
 			FrmCommodityDiscountAdd dlg=new FrmCommodityDiscountAdd();
 			dlg.setVisible(true);
 		}
+		else if(e.getSource()==this.menuItem_DiscountCommodityAdd){
+			if(this.curDiscountInformation==null) {
+				JOptionPane.showMessageDialog(null, "请选择满折编号", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			FrmDiscountcommodityAdd dlg=new FrmDiscountcommodityAdd();
+			dlg.discountInformation=curDiscountInformation;
+			dlg.setVisible(true);
+		}
+		
+		else if(e.getSource()==this.menuItem_DiscountInformationDel) {
+			if(this.curDiscountInformation==null) {
+				JOptionPane.showMessageDialog(null, "请选择满折", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			try {
+				SXCSUtil.commodityManager.deleteDiscountInformation(this.curDiscountInformation);
+			} catch (BaseException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+    else if(e.getSource()==this.menuItem_DiscountCommodityDel) {
+    	int i=FrmCommodityDiscount.this.dataTableDiscountCommodity.getSelectedRow();
+		if(i<0) {
+			JOptionPane.showMessageDialog(null, "请选择满折商品", "错误",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		try {
+			SXCSUtil.commodityManager.deleteDiscountCommodity(this.allDiscountCommodity.get(i));
+		} catch (BaseException e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+			return;
+		}	
+    	
+    	
+		}
+			
 		
 	}
 

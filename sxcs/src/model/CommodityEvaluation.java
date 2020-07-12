@@ -8,7 +8,7 @@ public class CommodityEvaluation {
 	private String eval_user_id;
 	private String eval_content;
 	private Date eval_date;
-	private int eval__star;
+	private double eval__star;
 	private String eval_picture;
 	public int getEval_commodity_id() {
 		return eval_commodity_id;
@@ -34,10 +34,10 @@ public class CommodityEvaluation {
 	public void setEval_date(Date eval_date) {
 		this.eval_date = eval_date;
 	}
-	public int getEval__star() {
+	public double getEval__star() {
 		return eval__star;
 	}
-	public void setEval__star(int eval__star) {
+	public void setEval__star(double eval__star) {
 		this.eval__star = eval__star;
 	}
 	public String getEval_picture() {

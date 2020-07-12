@@ -116,15 +116,15 @@ public class FrmCommodityAdd extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.btconfirm){
 			
-			float price=0;
-			float vipprice=0;
+			double price=0;
+			double vipprice=0;
 			String commodity=null;
 			String commodityspec=null;
 			String commoditydesc=null;
 			try {
 		    commodity =this.textcommodity.getText();
-		    price=(float)Double.parseDouble(this.textprice.getText());
-		    vipprice=(float) Double.parseDouble(this.textvip.getText());
+		    price=Double.parseDouble(this.textprice.getText());
+		    vipprice= Double.parseDouble(this.textvip.getText());
 			commodityspec =this.textspec.getText();
 			commoditydesc=this.textDesc.getText();
 			}

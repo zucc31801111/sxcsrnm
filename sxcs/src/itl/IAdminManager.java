@@ -7,7 +7,6 @@ import model.Coupon;
 import util.BaseException;
 
 public interface IAdminManager { 
-	public AdminInformation loadAdmin(String adminid)throws BaseException;
 	
 	public AdminInformation login(String userid, String pwd) throws BaseException;
 	
@@ -17,7 +16,7 @@ public interface IAdminManager {
 	
 	public void deleteCoupon(Coupon coupon) throws BaseException;
 	
-	public void addCoupon( String coupon_content , float coupon_pricedel, float coupon_price, String coupon_start_time,String coupon_end_time) throws BaseException;
+	public void addCoupon( String coupon_content , double coupon_price, double coupon_pricedel, String coupon_start_time,String coupon_end_time) throws BaseException;
 	
 	
 }

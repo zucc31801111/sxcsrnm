@@ -23,7 +23,7 @@ public class Promotion {
 	private int promotion_id;
 	private int promotion_commodity_id;
 	private String promotion_commodity_name;
-	private float promotion_price;
+	private double promotion_price;
 	private int promotion_sum;
 	private Timestamp promotion_start_time;
 	private Timestamp promotion_end_time;
@@ -39,10 +39,10 @@ public class Promotion {
 	public void setPromotion_commodity_id(int promotion_commodity_id) {
 		this.promotion_commodity_id = promotion_commodity_id;
 	}
-	public float getPromotion_price() {
+	public double getPromotion_price() {
 		return promotion_price;
 	}
-	public void setPromotion_price(float promotion_price) {
+	public void setPromotion_price(double promotion_price) {
 		this.promotion_price = promotion_price;
 	}
 	public int getPromotion_sum() {

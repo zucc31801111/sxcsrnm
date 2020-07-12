@@ -23,7 +23,7 @@ import util.DbException;
 public class AdminManager implements IAdminManager{
 	
 	@Override
-public void addCoupon( String coupon_content , float coupon_pricedel, float coupon_price, String coupon_start_time,String coupon_end_time) throws BaseException{
+ public void addCoupon( String coupon_content ,double coupon_price , double coupon_pricedel, String coupon_start_time,String coupon_end_time) throws BaseException{
 		Connection conn=null;
 		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -44,8 +44,8 @@ public void addCoupon( String coupon_content , float coupon_pricedel, float coup
 		String  sql="insert into coupon(coupon_content,coupon_price,coupon_pricedel,coupon_start_time,coupon_end_time)values(?,?,?,?,?)";
 		 java.sql.PreparedStatement   pst=conn.prepareStatement(sql);
 			 pst.setString(1,coupon_content);
-			 pst.setFloat(2,coupon_price);
-			 pst.setFloat(3,coupon_pricedel);
+			 pst.setDouble(2,coupon_price);
+			 pst.setDouble(3,coupon_pricedel);
 			 pst.setTimestamp(4,new java.sql.Timestamp(timeone.getTime()));
 			 pst.setTimestamp(5,new java.sql.Timestamp(timetwo.getTime()));
 			 pst.execute();
@@ -105,8 +105,8 @@ public void addCoupon( String coupon_content , float coupon_pricedel, float coup
 			 Coupon p =new Coupon();
 			 p.setCoupon_id(rs.getInt(1));
 			 p.setCoupon_content(rs.getString(2));
-			 p.setCoupon_price(rs.getFloat(3));
-			 p.setCoupon_pricedel(rs.getFloat(4));
+			 p.setCoupon_price(rs.getDouble(3));
+			 p.setCoupon_pricedel(rs.getDouble(4));
 			 p.setCoupon_start_time(rs.getTimestamp(5));
 			 p.setCoupon_end_time(rs.getTimestamp(6));
 			 result.add(p);
@@ -207,45 +207,6 @@ public void addCoupon( String coupon_content , float coupon_pricedel, float coup
 		return null;
 	}
 	
-	
-	@Override
-	public AdminInformation loadAdmin(String userid)throws BaseException{
-		
-		Connection conn=null;
-		try {
-			conn=DBUtil.getConnection();
-			String sql="select admin_id,admin_name,admin_pwd "
-					+ "from admin_information where userid=?";
-			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
-			pst.setString(1,userid);
-			java.sql.ResultSet rs=pst.executeQuery();
-			if(!rs.next()) throw new BusinessException("登陆账号不 存在");
-			AdminInformation u=new AdminInformation();
-			u.setAdmin_id(rs.getString(1));
-			u.setAdmin_name(rs.getString(2));
-			u.setAdmin_pwd(rs.getString(3));
-			rs.close();
-			pst.close();
-			return u;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DbException(e);
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
-		
-	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 
 }

@@ -138,7 +138,15 @@ public class FrmOrderUser extends JFrame implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==this.menuItem_Disscus){
-				
+			int i=FrmOrderUser.this.dataTableOrderContent.getSelectedRow();
+			if(i<0) {
+				JOptionPane.showMessageDialog(null, "请选择满折商品", "错误",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			FrmDiscuss dlg =new FrmDiscuss();
+			dlg.OrderContent=this.allOrderContent.get(i);
+			dlg.setVisible(true);
 		}
 	}
 

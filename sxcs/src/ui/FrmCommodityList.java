@@ -22,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import model.CommodityEvaluation;
 import model.CommodityInformation;
 import model.FreshCategory;
 import starter.SXCSUtil;
@@ -64,10 +65,36 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 	DefaultTableModel tabCommodityModel=new DefaultTableModel();
 	private JTable dataTableCommodity=new JTable(tabCommodityModel);
 	
+	private Object tblCommodityEvaluationTitle[]=CommodityEvaluation.tblCommodityEvaluationTitle;
+	private Object tblCommodityEvaluationData[][];
+	DefaultTableModel tabCommodityEvaluationModel=new DefaultTableModel();
+	private JTable dataTableCommodityEvaluation=new JTable(tabCommodityEvaluationModel);
+	
+	
 	private FreshCategory curCategory=null;
+	private CommodityInformation curCommodityInformation=null;
 	List<FreshCategory> allCategory=null;
 	List<CommodityInformation> categoryCommodity=null;
-
+	List<CommodityEvaluation> allCommodityEvaluation=null;
+	private void reloadCommodityEvaluationTabel(int planIdx){
+		if(planIdx<0) return;
+		curCommodityInformation=categoryCommodity.get(planIdx);
+		try {
+			allCommodityEvaluation=SXCSUtil.userManager.loadCommodityEvaluation(curCommodityInformation);
+		} catch (BaseException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		tblCommodityEvaluationData =new Object[allCommodityEvaluation.size()][CommodityEvaluation.tblCommodityEvaluationTitle.length];
+		for(int i=0;i<allCommodityEvaluation.size();i++){
+			for(int j=0;j<CommodityEvaluation.tblCommodityEvaluationTitle.length;j++)
+				tblCommodityEvaluationData[i][j]=allCommodityEvaluation.get(i).getCell(j);
+		}
+		
+		tabCommodityEvaluationModel.setDataVector(tblCommodityEvaluationData,tblCommodityEvaluationTitle);
+		this.dataTableCommodityEvaluation.validate();
+		this.dataTableCommodityEvaluation.repaint();
+	}
 	private void reloadFreshCategoryTable(){
 		try {
 			allCategory=SXCSUtil.commodityManager.loadFreshCategory();
@@ -103,6 +130,8 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 		this.dataTableCommodity.validate();
 		this.dataTableCommodity.repaint();
 	}
+	
+	
 	/**
 	 * Create the frame.
 	 */
@@ -141,10 +170,27 @@ public class FrmCommodityList extends JFrame implements ActionListener{
 					FrmCommodityList.this.reloadCommodityInformationTabel(i);
 				}
 		    	
-		    });
+		    }); 
 		    this.getContentPane().add(new JScrollPane(this.dataTableCommodity), BorderLayout.CENTER);
+		      this.reloadFreshCategoryTable();
+		  
+		      
+    this.dataTableCommodity.addMouseListener(new MouseAdapter (){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					int j=FrmCommodityList.this.dataTableCommodity.getSelectedRow();
+					if(j<0) {
+						return;
+					}
+					FrmCommodityList.this.reloadCommodityEvaluationTabel(j);
+				}
+		    	
+		    }); 
+		 
+		     this.getContentPane().add(new JScrollPane(this.dataTableCommodityEvaluation), BorderLayout.EAST);
 		    
-		    this.reloadFreshCategoryTable();
+		    
 		    
 		    this.setVisible(true);
 			

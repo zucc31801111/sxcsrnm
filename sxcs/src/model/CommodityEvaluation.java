@@ -1,13 +1,22 @@
 package model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
 public class CommodityEvaluation {
+	public static final String[] tblCommodityEvaluationTitle={"内容","评价日期","评价星级","图片URL"};
+     public String getCell(int col){
+	if(col==0) return ""+this.getEval_content();
+	else if(col==1) return ""+this.getEval_date();
+	else if(col==2) return ""+this.getEval__star();
+	else if(col==3) return ""+this.getEval_picture();
+	else return "";
+}
 	private int eval_commodity_id;
 	private String eval_user_id;
 	private String eval_content;
-	private Date eval_date;
+	private Timestamp eval_date;
 	private double eval__star;
 	private String eval_picture;
 	public int getEval_commodity_id() {
@@ -28,10 +37,10 @@ public class CommodityEvaluation {
 	public void setEval_content(String eval_content) {
 		this.eval_content = eval_content;
 	}
-	public Date getEval_date() {
+	public Timestamp getEval_date() {
 		return eval_date;
 	}
-	public void setEval_date(Date eval_date) {
+	public void setEval_date(Timestamp eval_date) {
 		this.eval_date = eval_date;
 	}
 	public double getEval__star() {

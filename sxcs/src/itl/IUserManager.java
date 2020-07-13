@@ -1,6 +1,7 @@
 package itl;
 import java.util.List;
 
+import model.CommodityEvaluation;
 import model.CommodityInformation;
 import model.CommodityOrder;
 import model.DeliveryAddressList;
@@ -37,6 +38,10 @@ public interface IUserManager {
 	public void  jiesuan(List<UserShopcar> shopcar,String arrivetime,DeliveryAddressList address)throws BaseException;
 	
 	public List<CommodityOrder> loadCommodityOrderUser()throws BaseException;
+	
+	public void  addCommodityEvaluation(OrderContent OrderContent,String content,double eviltion)throws BaseException;
+	
+	public List<CommodityEvaluation> loadCommodityEvaluation(CommodityInformation commodityInformation)throws BaseException;
 	
 	public List<OrderContent> loadCommodityOrderContent(CommodityOrder commodityOrder)throws BaseException;
 }

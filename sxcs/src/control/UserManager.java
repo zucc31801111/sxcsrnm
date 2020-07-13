@@ -11,6 +11,7 @@ import java.util.List;
 
 
 import itl.IUserManager;
+import model.CommodityEvaluation;
 import model.CommodityInformation;
 import model.CommodityOrder;
 import model.DeliveryAddressList;
@@ -28,6 +29,41 @@ import util.DbException;
 
 public class UserManager implements IUserManager{
 	
+	public List<CommodityEvaluation> loadCommodityEvaluation(CommodityInformation commodityInformation)throws BaseException{
+		List<CommodityEvaluation> result=new ArrayList<CommodityEvaluation>();
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select eval_content,eval_date,eval__star,eval_picture"
+					+ " from commodity_evaluation where eval_commodity_id=?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,commodityInformation.getCommodity_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+		 while(rs.next()) {
+			 CommodityEvaluation p =new CommodityEvaluation();
+			 p.setEval_content(rs.getString(1));
+			 p.setEval_date(rs.getTimestamp(2));
+			 p.setEval__star(rs.getDouble(3));
+			 p.setEval_picture(rs.getString(4));
+			 result.add(p);
+		 }
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return result;
+		
+		
+	}
 	
 	@Override
 	public void  jiesuan(List<UserShopcar> shopcar,String arrivetime,DeliveryAddressList address)throws BaseException{
@@ -463,7 +499,58 @@ public class UserManager implements IUserManager{
 		}
 		return null;
 	}
+	@Override
 	
+	public void  addCommodityEvaluation(OrderContent OrderContent,String content,double eviltion)throws BaseException{
+		if(content==null||content.equals(null) ){
+			throw new BusinessException("评价内容不能为空");
+		}
+		if(eviltion<=0||eviltion>5) {
+				throw new BusinessException("评价应大于0小于等于5");
+			}
+		Connection conn=null;
+		try {
+			conn=DBUtil.getConnection();
+			String sql="select * from commodity_evaluation where eval_commodity_id=? and eval_user_id=?";
+			java.sql.PreparedStatement  pst=conn.prepareStatement(sql);
+			pst.setInt(1, OrderContent.getContent_commodity_id());
+			pst.setString(2, UserInf.currentLoginUser.getUser_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+			if(rs.next()) {
+				rs.close();
+				pst.close();
+				throw new BusinessException("您已对改商品进行过评价");
+			}
+			rs.close();
+			pst.close();
+			
+			
+			sql="insert into commodity_evaluation(eval_commodity_id,eval_user_id,eval_content,eval_date,eval__star) "
+					+ "values(?,?,?,?,?)";	
+			  pst=conn.prepareStatement(sql);
+			pst.setInt(1, OrderContent.getContent_commodity_id());
+			pst.setString(2, UserInf.currentLoginUser.getUser_id());
+			pst.setString(3, content);
+			pst.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
+			pst.setDouble(5, eviltion);
+			pst.execute();
+			pst.close();
+		
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DbException(ex);
+			
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
 	
 	@Override
 	public void changeShopcar(UserShopcar shopcar,int sum)throws BaseException{

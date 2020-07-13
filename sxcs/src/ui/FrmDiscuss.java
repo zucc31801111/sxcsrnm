@@ -101,7 +101,7 @@ public class FrmDiscuss extends JFrame implements ActionListener{
 			eviltion= Double.parseDouble(this.textField.getText());
 			content=this.textField_1.getText();
 		}catch (NumberFormatException e1) {
-			JOptionPane.showMessageDialog(null, "价格不能为空", "错误",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "评价不能为空", "错误",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		

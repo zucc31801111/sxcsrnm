@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 
 import itl.IUserManager;
 import model.CommodityEvaluation;
@@ -74,6 +75,7 @@ public class UserManager implements IUserManager{
 		double youhiPrice=0;
 		int flag3=0;
 		int coupon_id=0;
+		double coupondel=0;
 		Connection conn=null;
 		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
@@ -261,6 +263,7 @@ public class UserManager implements IUserManager{
 			pst.close();	
 					
 		}
+		
 		//选择最优优惠券
 		sql="select coupon_id,coupon_pricedel,coupon_start_time,coupon_end_time from coupon where coupon_price<= ? order by coupon_pricedel desc";
 		pst=conn.prepareStatement(sql);
@@ -270,6 +273,7 @@ public class UserManager implements IUserManager{
 			if(rs.getTimestamp(3).before(new java.sql.Timestamp(System.currentTimeMillis()))&&new java.sql.Timestamp(System.currentTimeMillis()).before(rs.getTimestamp(4))) {
 				flag3=1;
 				coupon_id=rs.getInt(1);
+				 coupondel=rs.getDouble(2);
 				youhiPrice=youhiPrice-rs.getDouble(2);
 				
 			}
@@ -288,6 +292,7 @@ public class UserManager implements IUserManager{
 			pst.setInt(4, order);
 			pst.execute();
 			pst.close();
+			JOptionPane.showMessageDialog(null, "购买成功，已自动为您选择最优优惠券,优惠券减免 ："+coupondel+" 原价格："+sumPrice+" 优惠后价格："+youhiPrice);
 		}
 		
 		
@@ -300,7 +305,7 @@ public class UserManager implements IUserManager{
 		pst.setInt(3, order);
 		pst.execute();
 		pst.close();	
-			
+		JOptionPane.showMessageDialog(null, "购买成功，已自动为您选择最优选择,无满足优惠券，原价格："+sumPrice+" 优惠后价格："+youhiPrice);
 		}
 		
 		//更新
@@ -309,7 +314,10 @@ public class UserManager implements IUserManager{
 		pst.setString(1, UserInf.currentLoginUser.getUser_id());
 		pst.execute();
 		pst.close();
-	
+		
+			
+
+		
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 			throw new DbException(ex);
@@ -1020,8 +1028,22 @@ public class UserManager implements IUserManager{
 		int addressId =address.getDelivery_id();
 			try {
 				conn=DBUtil.getConnection();
+				String sql="select count(*) from commodity_order where order_delivery_id=?";
+				java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+				pst.setInt(1,address.getDelivery_id());
+				java.sql.ResultSet rs=pst.executeQuery();
+				if(rs.next()) 
+					if(rs.getInt(1)>0) {
+					rs.close();
+					pst.close();
+					throw new BusinessException("地址存在订单表中无法删除");
+				}
+				rs.close();
+				pst.close();
+				
+				
 		java.sql.Statement st=conn.createStatement();
-		  String sql="delete from delivery_address_list where delivery_id = "+addressId;
+		   sql="delete from delivery_address_list where delivery_id = "+addressId;
 		     st.execute(sql);
 		     st.close();
 		    
@@ -1065,8 +1087,21 @@ public class UserManager implements IUserManager{
 		int deliveryId =address.getDelivery_id();
 		try {
 			conn=DBUtil.getConnection();
-			String  sql="update delivery_address_list set  delivery_province = ?,delivery_city = ?,delivery_area = ?,delivery_address = ?,delivery_name = ?,delivery_phone = ? where delivery_id=?";
-			 java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			String sql="select count(*) from commodity_order where order_delivery_id=?";
+			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
+			pst.setInt(1,address.getDelivery_id());
+			java.sql.ResultSet rs=pst.executeQuery();
+			if(rs.next()) 
+				if(rs.getInt(1)>0) {
+				rs.close();
+				pst.close();
+				throw new BusinessException("地址存在订单表中无法修改");
+			}
+			rs.close();
+			pst.close();
+			
+			  sql="update delivery_address_list set  delivery_province = ?,delivery_city = ?,delivery_area = ?,delivery_address = ?,delivery_name = ?,delivery_phone = ? where delivery_id=?";
+			  pst=conn.prepareStatement(sql);
 			   pst.setString(1,address.getDelivery_province());
 				pst.setString(2,address.getDelivery_city());
 				pst.setString(3,address.getDelivery_area());

@@ -26,7 +26,9 @@ public class AdminManager implements IAdminManager{
  public void addCoupon( String coupon_content ,double coupon_price , double coupon_pricedel, String coupon_start_time,String coupon_end_time) throws BaseException{
 		Connection conn=null;
 		SimpleDateFormat time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+		if(coupon_pricedel>=coupon_price) {
+			throw new BusinessException("优惠价格应小于使用金额");
+		}
 		if(coupon_pricedel<=0||coupon_price<=0) {
 			throw new BusinessException("价格应大于0");
 		}
@@ -40,7 +42,9 @@ public class AdminManager implements IAdminManager{
 			conn=DBUtil.getConnection();
 			Date timeone=time.parse(coupon_start_time);
 		    Date timetwo=time.parse(coupon_end_time);
-	    
+	      if (new java.sql.Timestamp(timetwo.getTime()).before(new java.sql.Timestamp(timeone.getTime()))) {
+	    	  throw new BaseException("结束时间应晚于开始时间不能为空");
+	      }
 		String  sql="insert into coupon(coupon_content,coupon_price,coupon_pricedel,coupon_start_time,coupon_end_time)values(?,?,?,?,?)";
 		 java.sql.PreparedStatement   pst=conn.prepareStatement(sql);
 			 pst.setString(1,coupon_content);

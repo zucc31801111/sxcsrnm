@@ -232,6 +232,10 @@ public class CommodityManager implements ICommodityManager{
 			conn=DBUtil.getConnection();
 			Date timeone=time.parse(discount_start_time);
 		    Date timetwo=time.parse(discount_end_time);
+		    if (new java.sql.Timestamp(timetwo.getTime()).before(new java.sql.Timestamp(timeone.getTime()))) {
+		    	  throw new BaseException("结束时间应晚于开始时间不能为空");
+		      }
+		    
 		    String sql="insert into discount_information(discount_content,discount_number,discount_sum,discount_start_time,discount_end_time)values(?,?,?,?,?)";
 			java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setString(1, discount_content);
@@ -1070,6 +1074,9 @@ public class CommodityManager implements ICommodityManager{
 			conn=DBUtil.getConnection();
 			Date timeone=time.parse(starttime);
 		    Date timetwo=time.parse(endtime);
+		    if (new java.sql.Timestamp(timetwo.getTime()).before(new java.sql.Timestamp(timeone.getTime()))) {
+		    	  throw new BaseException("结束时间应晚于开始时间不能为空");
+		      }
 		    String sql="select count(*) from promotion where promotion_commodity_id = ?";
 		    java.sql.PreparedStatement pst=conn.prepareStatement(sql);
 			pst.setInt(1,commodityid);

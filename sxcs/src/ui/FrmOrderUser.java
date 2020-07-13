@@ -140,7 +140,7 @@ public class FrmOrderUser extends JFrame implements ActionListener {
 		if(e.getSource()==this.menuItem_Disscus){
 			int i=FrmOrderUser.this.dataTableOrderContent.getSelectedRow();
 			if(i<0) {
-				JOptionPane.showMessageDialog(null, "请选择满折商品", "错误",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "请选择评价商品", "错误",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			

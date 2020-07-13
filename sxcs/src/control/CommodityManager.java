@@ -710,7 +710,7 @@ public class CommodityManager implements ICommodityManager{
 				
 				String	sql="select count(*) from recommended where rec_commodity_name =?";
 				java.sql.PreparedStatement  pst=conn.prepareStatement(sql);
-				pst.setString(1,commodityName);
+				pst.setString(1,commodity.getCommodity_name());
 				java.sql.ResultSet rs=pst.executeQuery();
 				if(rs.next()) 
 					if(rs.getInt(1)>0) {
@@ -722,7 +722,7 @@ public class CommodityManager implements ICommodityManager{
 				pst.close();
 			   sql="select count(*) from promotion where promotion_commodity_name =?";
 				pst=conn.prepareStatement(sql);
-				pst.setString(1,commodityName);
+				pst.setString(1,commodity.getCommodity_name());
 				 rs=pst.executeQuery();
 				if(rs.next()) 
 					if(rs.getInt(1)>0) {
@@ -734,7 +734,7 @@ public class CommodityManager implements ICommodityManager{
 				pst.close();
 			   sql="select count(*) from user_shopcar where shopcar_commodity_name =?";
 				pst=conn.prepareStatement(sql);
-				pst.setString(1,commodityName);
+				pst.setString(1,commodity.getCommodity_name());
 			   rs=pst.executeQuery();
 				if(rs.next()) 
 					if(rs.getInt(1)>0) {

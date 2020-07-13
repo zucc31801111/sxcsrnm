@@ -104,7 +104,8 @@ public class UserManager implements IUserManager{
 				pst.execute();
 				pst.close();	 
 				
-		for(int i=0;i<shopcar.size();i++) {
+		for(
+			int i=0;i<shopcar.size();i++) {
 			int discountId=0;
 			int dicountNumber=0;
 			double discountSum=0;
@@ -160,7 +161,7 @@ public class UserManager implements IUserManager{
 			}
 			rs.close();
 			pst.close();
-			if(flag1==1) {
+			if(flag1==1&&flag2==0) {
 				if(s.getShopcar_commodity_sum()>=dicountNumber) {
 					sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price,content_discount_sum,content_discount_id)values(?,?,?,?,?,?)";
 				    pst=conn.prepareStatement(sql);
@@ -189,7 +190,7 @@ public class UserManager implements IUserManager{
 				}
 				
 			}
-			else if(flag2==1){
+			 if(flag1==0&&flag2==1){
 				if(s.getShopcar_commodity_sum()<=promotionSum) {
 				sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
 			    pst=conn.prepareStatement(sql);
@@ -241,7 +242,7 @@ public class UserManager implements IUserManager{
 				
 				
 			}
-			else {
+			if(flag1==0&&flag2==0) {
 				sql="insert into order_content(content_order_id,content_commodity_id,order_number,order_price)values(?,?,?,?)";
 			    pst=conn.prepareStatement(sql);
 			    pst.setInt(1,order);
@@ -251,7 +252,7 @@ public class UserManager implements IUserManager{
 			    pst.execute();
 			    pst.close();
 			    
-			    youhiPrice=youhiPrice+s.getShopcar_commodity_id()* s.getShopcar_commodity_sum();
+			    youhiPrice=youhiPrice+s.getShopcar_commodity_price()* s.getShopcar_commodity_sum();
 			}
 			//更新商品数量
 			sql="update commodity_information set commodity_number=commodity_number - ?,commodity_salecount= commodity_salecount + ? where commodity_id=?";
@@ -826,7 +827,7 @@ public class UserManager implements IUserManager{
 	
 	
 	@Override
-	public UserInf changeUserPwd(String userid,String oldPwd,String newPwd1,String newPwd2)throws BaseException{
+	public void changeUserPwd(String userid,String oldPwd,String newPwd1,String newPwd2)throws BaseException{
 		if(oldPwd==null||"".equals(oldPwd)) throw new BaseException("原密码不能为空");
 		if(newPwd1==null||"".equals(newPwd1)||newPwd2==null||"".equals(newPwd2))throw new BaseException("新密码不能为空");
 		if(!newPwd1.equals(newPwd2)) throw new BaseException("两次密码不一样");
@@ -861,7 +862,7 @@ public class UserManager implements IUserManager{
 					e.printStackTrace();
 				}
 		}
-		return null;
+		
 	}
 	@Override
 	public UserInf createUser(UserInf user)throws BaseException{

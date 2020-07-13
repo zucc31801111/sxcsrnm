@@ -132,7 +132,7 @@ public class FrmUserChangePwd extends JFrame implements ActionListener{
 			String  newPwd1=new String(this.passwordField_1.getPassword());
 			String  newPwd2=new String(this.passwordField_2.getPassword());
 			try {
-				UserInf.currentLoginUser= SXCSUtil.userManager.changeUserPwd(userid, oldPwd, newPwd1, newPwd2);
+				SXCSUtil.userManager.changeUserPwd(userid, oldPwd, newPwd1, newPwd2);
 					this.setVisible(false);
 			} catch (BaseException e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "错误",JOptionPane.ERROR_MESSAGE);
